@@ -1,0 +1,2 @@
+class WatchList:
+    pass

@@ -1,5 +1,6 @@
-from domainmodel.movie import Movie
-from domainmodel.review import Review
+from website.domainmodel.movie import Movie
+from website.domainmodel.review import Review
+
 
 class User:
     def __init__(self, user_name: str, password: str):
@@ -16,7 +17,7 @@ class User:
         self._time_spent_watching_movies_minutes = 0
 
     def __repr__(self):
-        return f"<User {self._user_name}>"
+        return f"<User {self._user_name} {self._password} >"
 
     def __eq__(self, other):
         return self._user_name == other._user_name
@@ -94,3 +95,4 @@ class User:
             self._time_spent_watching_movies_minutes += other
         else:
             pass
+

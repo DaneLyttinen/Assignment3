@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from domainmodel.movie import Movie
+from website.domainmodel.movie import Movie
 
 class Review:
     def __init__(self, movie: Movie, review_text: str, rating: int):

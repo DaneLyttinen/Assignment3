@@ -1,6 +1,6 @@
-from domainmodel.genre import Genre
-from domainmodel.actor import Actor
-from domainmodel.director import Director
+from website.domainmodel.genre import Genre
+from website.domainmodel.actor import Actor
+from website.domainmodel.director import Director
 
 class Movie:
     def __init__(self, title: str, release: int):
