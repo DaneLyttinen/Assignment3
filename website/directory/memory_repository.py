@@ -5,9 +5,13 @@ from datetime import date, datetime
 from typing import List
 from werkzeug.security import generate_password_hash
 
+from website.datafilereaders.movie_file_csv_reader import MovieFileCSVReader
 from website.directory.repository import AbstractRepository, RepositoryException
 from website.domainmodel import movie, user, review, watchlist, actor, director, genre
+from website.domainmodel.movie import Movie
+from website.domainmodel.review import Review
 from website.domainmodel.user import User
+from website.datafilereaders import movie_file_csv_reader
 
 
 class MemoryRepository(AbstractRepository):
@@ -20,21 +24,26 @@ class MemoryRepository(AbstractRepository):
         self._users = list()
         self._reviews = list()
 
-    def add_user(self, user: user.User):
+    def add_user(self, user: User):
         self._users.append(user)
 
-    def get_user(self, username) -> user.User:
-        return next((User for User in self._users if user.User.user_name == username), None)
+    def get_user(self, username) -> User:
+        return next((user for user in self._users if user.user_name == username), None)
 
-    def get_movie(self, id: int) -> movie:
-        article = None
+    def add_movie(self, movie: Movie):
+        self._movies.append(movie)
+
+    def get_movie(self, id: Movie) -> Movie:
+        movie = None
 
         try:
-            article = self._movies_index[id]
+            for i in self._movies:
+                if i == id:
+                    movie = i;
         except KeyError:
             pass  # Ignore exception and return None.
 
-        return article
+        return movie
 
     def get_movies_by_date(self, target_movie: movie.Movie.title) -> List[movie.Movie]:
         target_article = movie.Movie(
@@ -56,39 +65,42 @@ class MemoryRepository(AbstractRepository):
 
         return matching_articles
 
-    def get_number_of_articles(self):
+    def get_number_of_movies(self):
         return len(self._movies)
 
-    def get_first_article(self):
-        article = None
+    def sort_movies_by_date(self):
+        self._movies.sort(key=lambda x: x.release, reverse=True)
+
+    def get_first_movie(self):
+        movie = None
 
         if len(self._movies) > 0:
-            article = self._movies[0]
-        return article
+            movie = self._movies[0]
+        return movie
 
-    def get_last_article(self):
-        article = None
+    def get_last_movie(self):
+        movie = None
 
         if len(self._movies) > 0:
-            article = self._movies[-1]
-        return article
+            movie = self._movies[-1]
+        return movie
 
-    def get_articles_by_id(self, id_list):
+    def get_movie_by_id(self, id_list):
         # Strip out any ids in id_list that don't represent Article ids in the repository.
         existing_ids = [id for id in id_list if id in self._movies_index]
 
         # Fetch the Articles.
-        articles = [self._movies_index[id] for id in existing_ids]
-        return articles
+        movies = [self._movies_index[id] for id in existing_ids]
+        return movies
 
-    def get_date_of_previous_article(self, article: movie.Movie):
+    def get_date_of_previous_movie(self, article: movie.Movie):
         previous_date = None
 
         try:
             index = self.movie_index(article)
-            for stored_article in reversed(self._movies[0:index]):
-                if stored_article.date < article.release:
-                    previous_date = stored_article.release
+            for stored_movie in reversed(self._movies[0:index]):
+                if stored_movie.release < article.release:
+                    previous_date = stored_movie.release
                     break
         except ValueError:
             # No earlier articles, so return None.
@@ -96,14 +108,14 @@ class MemoryRepository(AbstractRepository):
 
         return previous_date
 
-    def get_date_of_next_article(self, article: movie):
+    def get_date_of_next_movie(self, movie: Movie):
         next_date = None
 
         try:
-            index = self.movie_index(article)
-            for stored_article in self._movies[index + 1:len(self._movies)]:
-                if stored_article.release > article.release:
-                    next_date = stored_article.release
+            index = self.movie_index(movie)
+            for stored_movie in self._movies[index + 1:len(self._movies)]:
+                if stored_movie.release > movie.release:
+                    next_date = stored_movie.release
                     break
         except ValueError:
             # No subsequent articles, so return None.
@@ -111,7 +123,7 @@ class MemoryRepository(AbstractRepository):
 
         return next_date
 
-    def add_comment(self, comment: review.Review):
+    def add_comment(self, comment: Review):
         super().add_comment(comment)
         self._reviews.append(comment)
 
@@ -119,63 +131,50 @@ class MemoryRepository(AbstractRepository):
         return self._reviews
 
     # Helper method to return article index.
-    def movie_index(self, article: movie.Movie):
-        index = bisect_left(self._movies, article)
-        if index != len(self._movies) and self._movies[index].date == article.release:
+    def movie_index(self, movie: Movie):
+        index = bisect_left(self._movies, movie)
+        if index != len(self._movies) and self._movies[index].date == movie.release:
             return index
         raise ValueError
 
-
-def read_csv_file(filename: str):
-    with open(filename, encoding='utf-8-sig') as infile:
-        reader = csv.reader(infile)
-
-        # Read first line of the the CSV file.
-        headers = next(reader)
-
-        # Read remaining rows from the CSV file.
-        for row in reader:
-            # Strip any leading/trailing white space from data read.
-            row = [item.strip() for item in row]
-            yield row
+    def get_10_top_rated(self):
+        a_list = sorted(self._movies,key=lambda x: x.release, reverse=True)
 
 
-def load_articles_and_tags(data_path: str, repo: MemoryRepository):
+def load_movies(data_path: str, repo: MemoryRepository):
     tags = dict()
+    data_path = "C:\\Users\Dane\\Desktop\\Assignment2\\website\\datafilereaders\\datafiles"
+    movie_file_reader = MovieFileCSVReader(data_path)
+    movie_file_reader.read_csv_file()
+    for data_row in movie_file_reader.dataset_of_movies:
+        repo.add_movie(data_row)
 
-    for data_row in read_csv_file(os.path.join(data_path, 'news_articles.csv')):
 
-        article_key = int(data_row[0])
-        number_of_tags = len(data_row) - 6
-        article_tags = data_row[-number_of_tags:]
+def load_genres(data_path: str, repo: MemoryRepository):
+    tags = dict()
+    data_path = "C:\\Users\Dane\\Desktop\\Assignment2\\website\\datafilereaders\\datafiles"
+    movie_file_reader = MovieFileCSVReader(data_path)
+    movie_file_reader.read_csv_file()
+    for genre in movie_file_reader.dataset_of_genres:
+        repo.add_genre(genre)
 
-        # Add any new tags; associate the current article with tags.
-        for tag in article_tags:
-            if tag not in tags.keys():
-                tags[tag] = list()
-            tags[tag].append(article_key)
-        del data_row[-number_of_tags:]
 
-        # Create Article object.
-        article = Article(
-            date=date.fromisoformat(data_row[1]),
-            title=data_row[2],
-            first_para=data_row[3],
-            hyperlink=data_row[4],
-            image_hyperlink=data_row[5],
-            id=article_key
-        )
+def load_actors(data_path: str, repo: MemoryRepository):
+    tags = dict()
+    data_path = "C:\\Users\Dane\\Desktop\\Assignment2\\website\\datafilereaders\\datafiles"
+    movie_file_reader = MovieFileCSVReader(data_path)
+    movie_file_reader.read_csv_file()
+    for act in movie_file_reader.dataset_of_actors:
+        repo.add_movie(act)
 
-        # Add the Article to the repository.
-        repo.add_article(article)
 
-    # Create Tag objects, associate them with Articles and add them to the repository.
-    for tag_name in tags.keys():
-        tag = Tag(tag_name)
-        for article_id in tags[tag_name]:
-            article = repo.get_article(article_id)
-            make_tag_association(article, tag)
-        repo.add_tag(tag)
+def load_directors(data_path: str, repo: MemoryRepository):
+    tags = dict()
+    data_path = "C:\\Users\Dane\\Desktop\\Assignment2\\website\\datafilereaders\\datafiles"
+    movie_file_reader = MovieFileCSVReader(data_path)
+    movie_file_reader.read_csv_file()
+    for dict in movie_file_reader.dataset_of_directors:
+        repo.add_movie(dict)
 
 
 def load_users(data_path: str, repo: MemoryRepository):
@@ -204,10 +203,4 @@ def load_comments(data_path: str, repo: MemoryRepository, users):
 
 def populate(data_path: str, repo: MemoryRepository):
     # Load articles and tags into the repository.
-    load_articles_and_tags(data_path, repo)
-
-    # Load users into the repository.
-    users = load_users(data_path, repo)
-
-    # Load comments into the repository.
-    load_comments(data_path, repo, users)
+    load_movies(data_path, repo)

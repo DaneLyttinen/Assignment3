@@ -1,0 +1,30 @@
+<nav id="nav">
+
+
+  <h2 id="nav-header">
+
+  </h2>
+
+
+
+    <div class="header">
+            <div class="nav">
+                <div class="logo">
+                    <a href="{{ url_for('home_bp.home') }}">
+                        <img src="http://redsox.uoa.auckland.ac.nz/ds/logo.svg" class="main-logo" width="120" >
+                    </a>
+                </div>
+                <ul class="menu">
+                    <li onclick="home();"><a class="btn-nav" href="{{ url_for('home_bp.home') }}" style="color:white;">Home</a></li>
+                    <li onclick="store();"><a class="btn-nav" href="{{ url_for('home_bp.home') }}" style="color:white;">Register</a></li>
+                    <li onclick="store();"><a class="btn-nav" href="{{ url_for('home_bp.home') }}" style="color:white;">Login</a></li>
+                </ul>
+            </div>
+
+    </div>
+
+
+  <div id="nav-footer">
+    COMPSCI 235 Software Development Methodologies
+  </div>
+</nav>

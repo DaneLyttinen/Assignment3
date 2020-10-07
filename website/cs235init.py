@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 
 def main():
-    filename = 'website/directory/datafiles/Data1000Movies.csv'
+    filename = 'datafilereaders/datafiles/Data1000Movies.csv'
     movie_file_reader = MovieFileCSVReader(filename)
     movie_file_reader.read_csv_file()
 

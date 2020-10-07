@@ -18,6 +18,7 @@ class Movie:
         self._actors = []
         self._genres = []
         self._runtime_minutes: int
+        self._rating: int
 
     def __repr__(self):
         return f"<Movie {self._title}, {self.release}>"

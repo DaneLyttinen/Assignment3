@@ -1,4 +1,5 @@
 import csv
+import os
 
 from website.domainmodel.movie import Movie
 from website.domainmodel.actor import Actor
@@ -15,7 +16,7 @@ class MovieFileCSVReader:
         self.__dataset_of_genres = set()
 
     def read_csv_file(self):
-        with open(self.__file_name, mode='r', encoding='utf-8-sig') as csvfile:
+        with open(os.path.join(self.__file_name, 'Data1000Movies.csv'), mode='r', encoding='utf-8-sig') as csvfile:
             movie_file_reader = csv.DictReader(csvfile)
 
             index = 0
@@ -23,20 +24,24 @@ class MovieFileCSVReader:
                 title = row['Title']
                 release_year = int(row['Year'])
                 movie = Movie(title, release_year)
+
                 if movie not in self.__dataset_of_movies:
                     self.__dataset_of_movies.add(movie)
                 actors = row['Actors'].split(",")
                 for actor in actors:
                     a_actor = Actor(actor)
+                    movie.add_actor(a_actor)
                     if a_actor not in self.__dataset_of_actors:
                         self.__dataset_of_actors.add(a_actor)
                 director = row["Director"]
                 director1 = Director(director)
+                movie.director = director1
                 if director1 not in self.__dataset_of_directors:
                     self.__dataset_of_directors.add(director1)
                 genres = row["Genre"].split(",")
                 for genre in genres:
                     a_genre = Genre(genre)
+                    movie.add_genre(a_genre)
                     if a_genre not in self.__dataset_of_genres:
                         self.__dataset_of_genres.add(a_genre)
                 index += 1

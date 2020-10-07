@@ -4,8 +4,8 @@ import os
 
 from flask import Flask
 
-import website.adapters.repository as repo
-from covid.adapters.memory_repository import MemoryRepository, populate
+import website.directory.repository as repo
+from website.directory.memory_repository import MemoryRepository, populate
 
 
 def create_app(test_config=None):
@@ -13,10 +13,10 @@ def create_app(test_config=None):
 
     # Create the Flask app object.
     app = Flask(__name__)
-
+    list_of_top_rated = [1, 2, 3]
     # Configure the app from configuration-file settings.
     app.config.from_object('config.Config')
-    data_path = os.path.join('covid', 'adapters', 'data')
+    data_path = os.path.join('website', 'datafilereaders', 'datafiles')
 
     if test_config is not None:
         # Load test configuration, and override any configuration settings.
@@ -30,16 +30,7 @@ def create_app(test_config=None):
     # Build the application - these steps require an application context.
     with app.app_context():
         # Register blueprints.
-        from .home import home
+        from .Home import home
         app.register_blueprint(home.home_blueprint)
-
-        from .news import news
-        app.register_blueprint(news.news_blueprint)
-
-        from .authentication import authentication
-        app.register_blueprint(authentication.authentication_blueprint)
-
-        from .utilities import utilities
-        app.register_blueprint(utilities.utilities_blueprint)
 
     return app
