@@ -36,6 +36,14 @@ class MovieFileCSVReader:
                 director = row["Director"]
                 director1 = Director(director)
                 movie.director = director1
+                description = row["Description"]
+                movie.description = description
+                rating = row["Rating"]
+
+                runtime = row["Runtime (Minutes)"]
+
+                movie.runtime_minutes = int(runtime)
+                movie.rating = float(rating)
                 if director1 not in self.__dataset_of_directors:
                     self.__dataset_of_directors.add(director1)
                 genres = row["Genre"].split(",")
@@ -45,6 +53,7 @@ class MovieFileCSVReader:
                     if a_genre not in self.__dataset_of_genres:
                         self.__dataset_of_genres.add(a_genre)
                 index += 1
+
 
     @property
     def dataset_of_movies(self):

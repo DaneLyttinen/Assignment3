@@ -2,8 +2,10 @@ from website.domainmodel.genre import Genre
 from website.domainmodel.actor import Actor
 from website.domainmodel.director import Director
 
+
 class Movie:
     def __init__(self, title: str, release: int):
+
         if title == "" or type(title) is not str:
             self._title = None
         else:
@@ -18,7 +20,7 @@ class Movie:
         self._actors = []
         self._genres = []
         self._runtime_minutes: int
-        self._rating: int
+        self._rating: float
 
     def __repr__(self):
         return f"<Movie {self._title}, {self.release}>"
@@ -44,6 +46,10 @@ class Movie:
         if type(actor) is Actor and actor not in self._actors:
             self._actors.append(actor)
 
+    def add_rating(self, rating):
+        if type(rating) is float and 1 <= rating <= 10:
+            pass
+
     def remove_actor(self, actor):
         if actor in self._actors:
             self._actors.remove(actor)
@@ -68,6 +74,15 @@ class Movie:
     def title(self, value):
         if type(value) is str:
             self._title = value.strip()
+
+    @property
+    def rating(self):
+        return self._rating
+
+    @rating.setter
+    def rating(self, value):
+        if type(value) is float and 0 <= value <= 10:
+            self._rating = value
 
     @property
     def description(self):

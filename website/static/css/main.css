@@ -25,9 +25,38 @@ html {
 #mini-header {
     height:50px;
 }
+.view {
+    float:right;
+    color:#D6D6D6;
+}
 .header {
-    background: red;
     height: 130px;
+}
+
+.movie_box {
+    width:20%;
+    height:180px;
+    text-align:center;
+    float:left;
+    background-color:blue;
+}
+h1 {
+    color:#D6D6D6;
+}
+
+.space {
+    width:100%;
+    height:100px;
+}
+
+.container {
+    overflow:hidden
+    width:200px;
+}
+
+.inner {
+    overflow:hidden
+    width:100%;
 }
 
 #content-wrapper {

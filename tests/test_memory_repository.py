@@ -30,6 +30,16 @@ def test_repository_can_add_a_user():
 
     assert x.get_user('dave') is user
 
+def test_repository_movies_have_rating():
+    movie = x.get_movie(<Movie Prometheus 2012>)
+
+    assert movie.rating is 7
+
+def test_repository_get_10_movies_with_genre():
+    a_genre = Genre("Action")
+    genre_list = x.get_10_movies_genre(a_genre)
+    print(genre_list)
+    assert len(genre_list) == 10
 
 def test_repository_can_retrieve_a_user():
     x = memory_repository.MemoryRepository()
@@ -89,6 +99,15 @@ def test_repository_does_not_retrieve_a_non_existent_movie():
     a_movie = Movie("fake movie", 2014)
     movie = x.get_movie(a_movie)
     assert movie is None
+
+def test_repository_movies_have_genres(in_memory_repo):
+
+    newlist = x.get_10_movies()
+
+    # Check that the query returned 3 Articles.
+    assert len(newlist) == 10
+    print(newlist[0].genres)
+    assert newlist[0].genres is not None
 
 
 def test_repository_can_retrieve_movies_by_date(in_memory_repo):

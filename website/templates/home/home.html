@@ -5,10 +5,41 @@
     <div id="mini-header">
       <input type="text" placeholder="Search.." id = "searchBar">
     </div>
-    <p>
-      Latest movies
-    </p>
+    <h1>
+      Top Rated Movies
+    </h1>
     <br>
+        <div class="container">
+          <div class="inner">
+        {% for movie in ten_movies %}
+          <div class="movie_box">
+                  <p style="padding-top:10px;margin-left:auto;margin-right:auto;">{{movie.title}}</p>
+                  <p style="padding-top:10px;">Director: {{movie.director.director_full_name}}</p>
+                  <p style="padding-top:10px;">Runtime: {{movie.runtime_minutes}}</p>
+                  <p style="padding-top:10px;">Rating: {{movie.rating}}</p>
+          </div>
+         {% endfor %}
+            </div>
+        </div>
+    <br>
+    {% for genre,movie in movies_genres.items() %}
+      <div class="space"></div>
+      <h1 style="margin-top:50px;margin-top:80px;"> {{genre.genre_name}}</h1>
+      <a class="view" href="{{ url_for('all_movies_bp.movies_by_genre', genre=genre.genre_name) }}'">View All {{genre.genre_name}}</a>
+      <br>
+        <div class="container">
+            <div class="inner">
+              {% for m in movie %}
+                <div class="movie_box">
+                  <p style="padding-top:10px;margin-left:auto;margin-right:auto;">{{m.title}}</p>
+                  <p style="padding-top:10px;">Director: {{m.director.director_full_name}}</p>
+                  <p style="padding-top:10px;">Runtime: {{m.runtime_minutes}}</p>
+                  <p style="padding-top:10px;">Rating: {{m.rating}}</p>
+                </div>
+              {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
   <p>
     The COVID‑19 pandemic, also known as the coronavirus pandemic, is an ongoing
     global pandemic of coronavirus disease 2019 (COVID‑19), caused by severe

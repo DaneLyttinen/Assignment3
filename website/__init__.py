@@ -26,11 +26,14 @@ def create_app(test_config=None):
     # Create the MemoryRepository implementation for a memory-based repository.
     repo.repo_instance = MemoryRepository()
     populate(data_path, repo.repo_instance)
-
+    ten_movies = repo.repo_instance.get_10_movies()
     # Build the application - these steps require an application context.
     with app.app_context():
         # Register blueprints.
         from .Home import home
         app.register_blueprint(home.home_blueprint)
+
+        from .movie_genre import movie_genre
+        app.register_blueprint(movie_genre.movies_blueprint)
 
     return app

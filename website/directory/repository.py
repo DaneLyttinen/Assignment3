@@ -3,6 +3,7 @@ from typing import List
 from datetime import date
 
 from website.domainmodel import user, review, movie, watchlist
+from website.domainmodel.genre import Genre
 
 repo_instance = None
 
@@ -25,6 +26,22 @@ class AbstractRepository(abc.ABC):
 
         If there is no User with the given username, this method returns None.
         """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_10_movies(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_10_movies_genre(self, genre) -> Genre:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_all_movies_genre(self, genre) -> Genre:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_genres(self):
         raise NotImplementedError
 
     @abc.abstractmethod
