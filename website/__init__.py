@@ -36,4 +36,10 @@ def create_app(test_config=None):
         from .movie_genre import movie_genre
         app.register_blueprint(movie_genre.movies_blueprint)
 
+        from .movie_info import movie_info
+        app.register_blueprint(movie_info.movie_info_blueprint)
+
+        from .authentication import authentication
+        app.register_blueprint(authentication.authentication_blueprint)
+
     return app

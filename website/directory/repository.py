@@ -4,6 +4,9 @@ from datetime import date
 
 from website.domainmodel import user, review, movie, watchlist
 from website.domainmodel.genre import Genre
+from website.domainmodel.movie import Movie
+from website.domainmodel.review import Review
+from website.domainmodel.user import User
 
 repo_instance = None
 
@@ -17,11 +20,11 @@ class RepositoryException(Exception):
 class AbstractRepository(abc.ABC):
 
     @abc.abstractmethod
-    def add_user(self, user: user.User):
+    def add_user(self, user: User):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_user(self, username) -> user.User:
+    def get_user(self, username) -> User:
         """ Returns the User named username from the repository.
 
         If there is no User with the given username, this method returns None.
@@ -41,16 +44,20 @@ class AbstractRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
+    def get_movie_by_title(self, title) -> str:
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def get_genres(self):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def add_movie(self, article: movie.Movie):
+    def add_movie(self, movie: Movie):
         """ Adds an Article to the repository. """
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_movie(self, id: str) -> movie.Movie:
+    def get_movie(self, id: Movie) -> Movie:
         """ Returns Article with id from the repository.
 
         If there is no Article with the given id, this method returns None.
@@ -58,7 +65,7 @@ class AbstractRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def add_comment(self, comment: review.Review):
+    def add_comment(self, comment: Review):
         """ Adds a Comment to the repository.
 
         If the Comment doesn't have bidirectional links with an Article and a User, this method raises a

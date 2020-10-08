@@ -1,11 +1,6 @@
 <nav id="nav">
 
 
-  <h2 id="nav-header">
-
-  </h2>
-
-
 
     <div class="header">
             <div class="nav">
@@ -15,16 +10,22 @@
                     </a>
                 </div>
                 <ul class="menu">
-                    <li onclick="home();"><a class="btn-nav" href="{{ url_for('home_bp.home') }}" style="color:white;">Home</a></li>
-                    <li onclick="store();"><a class="btn-nav" href="{{ url_for('home_bp.home') }}" style="color:white;">Register</a></li>
-                    <li onclick="store();"><a class="btn-nav" href="{{ url_for('home_bp.home') }}" style="color:white;">Login</a></li>
+                    <li><a class="btn-nav" href="{{ url_for('home_bp.home') }}" style="color:white;">Home</a></li>
+                    <li><a class="btn-nav" href="{{ url_for('authentication_bp.register') }}" style="color:white;">Register</a></li>
+                    {% if 'username' in session %} <li><a class="btn-nav" href="{{ url_for('authentication_bp.logout') }}" style="color:white;">Logout</a></li>
+                    {% else %}
+                    <li><a class="btn-nav" href="{{ url_for('authentication_bp.login') }}" style="color:white;">Login</a></li>
+                    {% endif %}
+
                 </ul>
             </div>
 
     </div>
+    <h2 id="nav-header">
+        {% if 'username' in session %} Hello, {{ session['username'] }} {%
+        endif %}
+    </h2>
 
 
-  <div id="nav-footer">
-    COMPSCI 235 Software Development Methodologies
-  </div>
+
 </nav>

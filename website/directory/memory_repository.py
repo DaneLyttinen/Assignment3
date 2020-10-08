@@ -36,7 +36,8 @@ class MemoryRepository(AbstractRepository):
         return next((user for user in self._users if user.user_name == username), None)
 
     def add_movie(self, movie: Movie):
-        self._movies.append(movie)
+        if type(movie) is Movie and movie not in self._movies:
+            self._movies.append(movie)
 
     def get_movie(self, id: Movie) -> Movie:
         movie = None
@@ -78,7 +79,6 @@ class MemoryRepository(AbstractRepository):
 
     def get_first_movie(self):
         movie = None
-
         if len(self._movies) > 0:
             movie = self._movies[0]
         return movie
@@ -90,13 +90,14 @@ class MemoryRepository(AbstractRepository):
             movie = self._movies[-1]
         return movie
 
-    def get_movie_by_id(self, id_list):
+    def get_movie_by_title(self, title):
         # Strip out any ids in id_list that don't represent Article ids in the repository.
-        existing_ids = [id for id in id_list if id in self._movies_index]
 
+        for movie in self._movies:
+            if movie.title == title:
+                return movie
         # Fetch the Articles.
-        movies = [self._movies_index[id] for id in existing_ids]
-        return movies
+
 
     def get_date_of_previous_movie(self, article: movie.Movie):
         previous_date = None

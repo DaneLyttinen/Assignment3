@@ -6,6 +6,7 @@ from website.domainmodel.director import Director
 class Movie:
     def __init__(self, title: str, release: int):
 
+
         if title == "" or type(title) is not str:
             self._title = None
         else:
@@ -21,6 +22,8 @@ class Movie:
         self._genres = []
         self._runtime_minutes: int
         self._rating: float
+        self._metascore: int
+        self._num_of_ratings: float
 
     def __repr__(self):
         return f"<Movie {self._title}, {self.release}>"
@@ -65,6 +68,24 @@ class Movie:
             self._genres.remove(genre)
         else:
             pass
+
+    @property
+    def metascore(self):
+        return self._metascore
+
+    @metascore.setter
+    def metascore(self, value):
+        if type(value) is str:
+            self._metascore = value
+
+    @property
+    def num_of_ratings(self):
+        return self._num_of_ratings
+
+    @num_of_ratings.setter
+    def num_of_ratings(self, value):
+        if type(value) is float:
+            self._num_of_ratings = value
 
     @property
     def title(self):

@@ -31,7 +31,7 @@ def test_repository_can_add_a_user():
     assert x.get_user('dave') is user
 
 def test_repository_movies_have_rating():
-    movie = x.get_movie(<Movie Prometheus 2012>)
+    movie = x.get_movie()
 
     assert movie.rating is 7
 

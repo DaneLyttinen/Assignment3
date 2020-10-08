@@ -33,6 +33,10 @@ class MovieFileCSVReader:
                     movie.add_actor(a_actor)
                     if a_actor not in self.__dataset_of_actors:
                         self.__dataset_of_actors.add(a_actor)
+                metascore = row['Metascore']
+                movie.metascore = str(metascore)
+                num_of_ratings = row['Votes']
+                movie.num_of_ratings = float(num_of_ratings)
                 director = row["Director"]
                 director1 = Director(director)
                 movie.director = director1
