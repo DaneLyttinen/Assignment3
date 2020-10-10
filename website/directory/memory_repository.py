@@ -7,13 +7,7 @@ from werkzeug.security import generate_password_hash
 
 from website.datafilereaders.movie_file_csv_reader import MovieFileCSVReader
 from website.directory.repository import AbstractRepository, RepositoryException
-from website.domainmodel import movie, user, review, watchlist, actor, director, genre
-from website.domainmodel.actor import Actor
-from website.domainmodel.director import Director
-from website.domainmodel.genre import Genre
-from website.domainmodel.movie import Movie
-from website.domainmodel.review import Review
-from website.domainmodel.user import User
+from website.domainmodel.model import Movie, User, Review, Actor, Director, Genre, make_review
 from website.datafilereaders import movie_file_csv_reader
 
 
@@ -32,7 +26,7 @@ class MemoryRepository(AbstractRepository):
     def add_user(self, user: User):
         self._users.append(user)
 
-    def get_user(self, username) -> User:
+    def get_user(self, username) -> str:
         return next((user for user in self._users if user.user_name == username), None)
 
     def add_movie(self, movie: Movie):
@@ -51,8 +45,8 @@ class MemoryRepository(AbstractRepository):
 
         return movie
 
-    def get_movies_by_date(self, target_movie: movie.Movie.title) -> List[movie.Movie]:
-        target_article = movie.Movie(
+    def get_movies_by_date(self, target_movie: Movie.title) -> List[Movie]:
+        target_article = Movie(
             title=target_movie,
             release=target_movie.release
         )
@@ -91,15 +85,13 @@ class MemoryRepository(AbstractRepository):
         return movie
 
     def get_movie_by_title(self, title):
-        # Strip out any ids in id_list that don't represent Article ids in the repository.
-
         for movie in self._movies:
             if movie.title == title:
                 return movie
-        # Fetch the Articles.
 
 
-    def get_date_of_previous_movie(self, article: movie.Movie):
+
+    def get_date_of_previous_movie(self, article: Movie):
         previous_date = None
 
         try:
@@ -129,12 +121,21 @@ class MemoryRepository(AbstractRepository):
 
         return next_date
 
-    def add_comment(self, comment: Review):
-        super().add_comment(comment)
+    def get_review_for_movie(self, movie: Movie):
+        list_of_reviews = []
+        for review in self._reviews:
+            if movie == review.movie:
+                list_of_reviews.append(review)
+        return list_of_reviews
+
+    def add_review(self, comment: Review):
+        super().add_review(comment)
         self._reviews.append(comment)
 
     def get_comments(self):
         return self._reviews
+
+
 
     # Helper method to return article index.
     def movie_index(self, movie: Movie):
@@ -239,6 +240,16 @@ def load_directors(data_path: str, repo: MemoryRepository):
     for dict in movie_file_reader.dataset_of_directors:
         repo.add_director(dict)
 
+def load_review(repo: MemoryRepository):
+    a_movie = Movie("The Dark Knight", 2008)
+    movie = repo.get_movie(a_movie)
+    review_text = "not good"
+    rating = 2
+    user = User("daneln", "Dane1337")
+    review = Review(movie, "not good", 2)
+    a_review = make_review(review_text,user,movie,rating)
+    repo.add_review(a_review)
+    a_reviewer = repo.get_review_for_movie(movie)
 
 def load_users(data_path: str, repo: MemoryRepository):
     users = dict()
@@ -253,15 +264,7 @@ def load_users(data_path: str, repo: MemoryRepository):
     return users
 
 
-def load_comments(data_path: str, repo: MemoryRepository, users):
-    for data_row in read_csv_file(os.path.join(data_path, 'comments.csv')):
-        comment = make_comment(
-            comment_text=data_row[3],
-            user=users[data_row[1]],
-            article=repo.get_article(int(data_row[2])),
-            timestamp=datetime.fromisoformat(data_row[4])
-        )
-        repo.add_comment(comment)
+
 
 
 def populate(data_path: str, repo: MemoryRepository):
@@ -273,3 +276,5 @@ def populate(data_path: str, repo: MemoryRepository):
     load_actors(data_path, repo)
 
     load_directors(data_path, repo)
+
+    load_review(repo)

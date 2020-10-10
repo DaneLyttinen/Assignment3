@@ -1,7 +1,7 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from website.directory.repository import AbstractRepository
-from website.domainmodel.user import User
+from website.domainmodel.model import User
 
 
 class NameNotUniqueException(Exception):

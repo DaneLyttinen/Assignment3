@@ -2,8 +2,7 @@ from typing import Iterable
 import random
 
 from website.directory.repository import AbstractRepository
-from website.domainmodel.movie import Movie
-from website.domainmodel.review import Review
+from website.domainmodel.model import Movie, Review, User
 
 
 class NonExistentArticleException(Exception):
@@ -39,18 +38,23 @@ def get_movie(repo: AbstractRepository, movie):
     return movie
 
 
-def add_comment(movie: Movie, comment_text: str, username: str, repo: AbstractRepository):
+def add_review(movie: Movie, comment_text: str, rating: int, username: str, repo: AbstractRepository):
     # Check that the article exists.
     movie = repo.get_movie(movie)
     if movie is None:
         raise NonExistentArticleException
 
     user = repo.get_user(username)
+    print("current user",user)
     if user is None:
         raise UnknownUserException
 
     # Create comment.
-    comment = Review(movie, comment_text, 10)
+    comment = Review(movie, comment_text, rating)
+    comment.user = user
+    user.add_review(comment)
+    movie.add_review(comment)
+    print("all reviews", user.reviews)
 
     # Update the repository.
-    repo.add_comment(comment)
+    repo.add_review(comment)

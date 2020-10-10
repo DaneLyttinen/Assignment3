@@ -1,12 +1,9 @@
 import abc
 from typing import List
-from datetime import date
+from datetime import date, datetime
 
-from website.domainmodel import user, review, movie, watchlist
-from website.domainmodel.genre import Genre
-from website.domainmodel.movie import Movie
-from website.domainmodel.review import Review
-from website.domainmodel.user import User
+from website.domainmodel.model import User, Review, Movie, Genre
+
 
 repo_instance = None
 
@@ -48,6 +45,10 @@ class AbstractRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
+    def get_review_for_movie(self, movie) -> Movie:
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def get_genres(self):
         raise NotImplementedError
 
@@ -55,6 +56,8 @@ class AbstractRepository(abc.ABC):
     def add_movie(self, movie: Movie):
         """ Adds an Article to the repository. """
         raise NotImplementedError
+
+
 
     @abc.abstractmethod
     def get_movie(self, id: Movie) -> Movie:
@@ -65,15 +68,15 @@ class AbstractRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def add_comment(self, comment: Review):
+    def add_review(self, review: Review):
         """ Adds a Comment to the repository.
 
         If the Comment doesn't have bidirectional links with an Article and a User, this method raises a
         RepositoryException and doesn't update the repository.
         """
-        if comment is None or comment not in user.User.reviews:
+        if review.user is None or review not in review.user.reviews:
             raise RepositoryException('Comment not correctly attached to a User')
-        if comment.movie is None or comment not in movie.Movie:
+        if review.movie is None or review not in review.movie.reviews:
             raise RepositoryException('Comment not correctly attached to an Article')
 
     @abc.abstractmethod

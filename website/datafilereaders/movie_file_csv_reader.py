@@ -1,10 +1,7 @@
 import csv
 import os
+from website.domainmodel.model import  Movie, Actor, Genre, Director
 
-from website.domainmodel.movie import Movie
-from website.domainmodel.actor import Actor
-from website.domainmodel.genre import Genre
-from website.domainmodel.director import Director
 
 
 class MovieFileCSVReader:

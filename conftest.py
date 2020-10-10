@@ -4,6 +4,7 @@ import pytest
 from website import create_app
 from website.directory import memory_repository
 from website.directory.memory_repository import MemoryRepository
+from website.domainmodel.model import Movie
 
 TEST_DATA_PATH = data_path = os.path.join('../website', 'datafilereaders', 'datafiles')
 

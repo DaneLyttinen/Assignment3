@@ -2,7 +2,7 @@
 
 import os
 
-from flask import Flask
+from flask import Flask, session
 
 import website.directory.repository as repo
 from website.directory.memory_repository import MemoryRepository, populate
@@ -27,6 +27,7 @@ def create_app(test_config=None):
     repo.repo_instance = MemoryRepository()
     populate(data_path, repo.repo_instance)
     ten_movies = repo.repo_instance.get_10_movies()
+
     # Build the application - these steps require an application context.
     with app.app_context():
         # Register blueprints.

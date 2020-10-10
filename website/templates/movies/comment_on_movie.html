@@ -3,24 +3,50 @@
 {% block content %}
 
 <main id="main">
-    <header>
-        <h1>{{date}}</h1>
-    </header>
+
+    <div id="content-wrapper">
+    <h1>{{movie.title}}</h1>
+    <div class="container">
+            <div class="inner">
+                <div class="movie_info_box">
+                    <p class="text"> {{movie.description}}</p>
+                        <ul class="actors">
+                            <li>Actors: </li>
+                            {% for actor in movie.actors %}
+                                <li>{{actor.actor_full_name}}</li>
+                            {% endfor %}
+                        </ul>
+                        <br>
+                        <br>
+                        <br>
+                      <p class="text">Director: {{movie.director.director_full_name}}</p>
+                      <p  class="text">Runtime: {{movie.runtime_minutes}}m</p>
+                    <p  class="text">Release: {{movie.release}} </p>
+                    <p  class="text">Rating: {{movie.rating}}({{movie.num_of_ratings}}) Metascore: {{movie.metascore}}</p>
+
+
+                </div>
+            </div>
+                                <div style="float:right">
+                            {% if movie.reviews|length > 0 and movie.title != show_comments_for_article %}
+                                <button class="btn-general" onclick="location.href='{{ url_for('movie_info_bp.movie_info', movie=movie.title, view_reviews_for=movie.title)}}'"> reviews</button>
+                            {% endif %}
+                            <button class="btn-general" onclick="location.href='{{ url_for('movie_info_bp.comment_on_movie', movie=movie.title) }}'">Comment</button>
+                        </div>
+    </div>
+
 
     <div style="clear:both">
-        <a href="{{article.hyperlink}}" target="_blank">
-            <img src={{article.image_hyperlink}} alt="article image">
-        </a>
-        <h2>{{movie.title}}</h2>
+
 
         <div style="float:left">
         </div>
         <div class="form-wrapper">
             <form action="{{handler_url}}" method="post">
-                {{form.article_id}} <!-- Need to include this hidden field as it tracks the article being commented. -->
+                {{form.movie_id}} <!-- Need to include this hidden field as it tracks the article being commented. -->
                 {{form.csrf_token}} <!-- Need to include this token - Flask WTForms requires it. -->
                 <br>
-                <div class ="form-field">{{form.comment.label}} </br>{{form.comment(size = 100, placeholder="type your comment", class="textarea", cols="50", rows="6", wrap="hard")}}
+                <div class ="comment-form">{{form.comment.label}} </br>{{form.comment(size = 100, placeholder="type your comment", class="textarea", cols="50", rows="6", wrap="hard")}}
                     {% if form.comment.errors %}
                         <ul class="errors">
         	            {% for error in form.comment.errors %}
@@ -29,14 +55,24 @@
                         </ul>
                     {% endif %}
                 </div>
+                <div class ="comment-form" id="rating-box">{{form.review.label}} </br>{{form.review(size = 50, placeholder="enter a rating from 0-10", class="textarea", cols="50", rows="6", wrap="hard")}}
+                    {% if form.review.errors %}
+                        <ul class="errors">
+        	            {% for error in form.review.errors %}
+        		            <li>{{error}}</li>
+                        {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
                 {{ form.submit }}
             </form>
         </div>
+
         <div style="clear:both">
-            {% for comment in article.comments %}
-                <p>{{comment.comment_text}}, by {{comment.username}}, {{comment.timestamp}}</p>
+            {% for review in movie.reviews %}
+                <p class="comment">{{review.review_text}}, final score: {{review.rating}} by {{review.user.user_name}}, {{review.date}}</p>
             {% endfor %}
         </div>
-    </article>
+    </article></div>
 </main>
 {% endblock %}

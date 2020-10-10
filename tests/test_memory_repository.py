@@ -6,16 +6,16 @@ import pytest
 
 from website.directory import memory_repository
 from website.directory.repository import AbstractRepository, RepositoryException
-from website.domainmodel import movie, user, review, watchlist, actor, director, genre
-from website.domainmodel.genre import Genre
-from website.domainmodel.user import User
+from website.domainmodel.model import Movie, User, Review, Actor, Director, Genre, make_review
+
 from website.datafilereaders import movie_file_csv_reader
 from website.directory import memory_repository
-from website.domainmodel.movie import Movie
+
 
 x = memory_repository.MemoryRepository()
 data_path = os.path.join('../website', 'datafilereaders', 'datafiles')
 memory_repository.load_movies(data_path, x)
+
 
 def test_repository_can_load_movies():
     data_path = os.path.join('../website', 'datafilereaders', 'datafiles')
@@ -30,16 +30,32 @@ def test_repository_can_add_a_user():
 
     assert x.get_user('dave') is user
 
+
+def test_repository_can_get_review_of_movie():
+    a_movie = Movie("Guardians of the Galaxy", 2014)
+    movie = x.get_movie(a_movie)
+    review_text = "not good"
+    rating = 2
+    user = User("daneln", "Dane1337")
+    review = Review(movie, "not good", 2)
+    a_review = make_review(review_text,user,movie,rating)
+    x.add_review(a_review)
+    a_reviewer = x.get_review_for_movie(movie)
+    assert a_reviewer[0] == review
+
+
 def test_repository_movies_have_rating():
     movie = x.get_movie()
 
     assert movie.rating is 7
+
 
 def test_repository_get_10_movies_with_genre():
     a_genre = Genre("Action")
     genre_list = x.get_10_movies_genre(a_genre)
     print(genre_list)
     assert len(genre_list) == 10
+
 
 def test_repository_can_retrieve_a_user():
     x = memory_repository.MemoryRepository()
@@ -92,16 +108,13 @@ def test_repository_can_retrieve_movie():
     assert movie.genres == "[<Genre Action,Adventure,Sci-Fi>]"
 
 
-
-
-
 def test_repository_does_not_retrieve_a_non_existent_movie():
     a_movie = Movie("fake movie", 2014)
     movie = x.get_movie(a_movie)
     assert movie is None
 
-def test_repository_movies_have_genres(in_memory_repo):
 
+def test_repository_movies_have_genres(in_memory_repo):
     newlist = x.get_10_movies()
 
     # Check that the query returned 3 Articles.
