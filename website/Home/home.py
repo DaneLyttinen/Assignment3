@@ -9,19 +9,24 @@ import website.directory.memory_repository as mem
 import website.Home.services as services
 from website.domainmodel.model import Genre
 import website.movie_genre.movie_genre
+import requests
+import urllib.parse
 
 home_blueprint = Blueprint(
     'home_bp', __name__)
 
 
-@home_blueprint.route('/', methods=['GET'])
+@home_blueprint.route('/', methods=['GET', 'POST'])
 def home():
     ten_movies = services.get_ten_movies(repo.repo_instance)
     genres = services.get_genres(repo.repo_instance)
     movies_genres = {}
-    search = MovieSearchForm(request.form)
+    search = MovieSearchForm()
     if request.method == 'POST':
-        return search_results(search)
+        parameter = search.select.data
+        search_parameter = search.search.data
+        return redirect(
+            url_for('all_movies_bp.movies_by_search', parameter=parameter, search_parameter=search_parameter))
 
     genre_url = []
     for genre in genres:
@@ -40,6 +45,7 @@ def home():
         form=search
     )
 
+
 @home_blueprint.route('/results')
 def search_results(search):
     results = []
@@ -54,8 +60,11 @@ def movies_by_genre():
 
 
 class MovieSearchForm(Form):
-    choices = [('Title'), ('Title'),
-               ('Actor'), ('Actor'),
-               ('Director'), ('Director')]
+    choices = [('Title'),
+               ('Actor'),
+               ('Director')]
     select = SelectField('Search movies:', choices=choices)
     search = StringField('')
+
+
+

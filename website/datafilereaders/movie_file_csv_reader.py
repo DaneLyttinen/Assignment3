@@ -1,7 +1,10 @@
 import csv
 import os
-from website.domainmodel.model import  Movie, Actor, Genre, Director
+import urllib.parse
 
+import requests
+
+from website.domainmodel.model import Movie, Actor, Genre, Director
 
 
 class MovieFileCSVReader:
@@ -21,7 +24,8 @@ class MovieFileCSVReader:
                 title = row['Title']
                 release_year = int(row['Year'])
                 movie = Movie(title, release_year)
-
+                # url = imdb_from_title(title, release_year)
+                # movie.image = str(url)
                 if movie not in self.__dataset_of_movies:
                     self.__dataset_of_movies.add(movie)
                 actors = row['Actors'].split(",")
@@ -55,7 +59,6 @@ class MovieFileCSVReader:
                         self.__dataset_of_genres.add(a_genre)
                 index += 1
 
-
     @property
     def dataset_of_movies(self):
         return self.__dataset_of_movies
@@ -71,3 +74,21 @@ class MovieFileCSVReader:
     @property
     def dataset_of_genres(self):
         return self.__dataset_of_genres
+
+
+def imdb_from_title(title, year):
+    pattern = 'https://api.themoviedb.org/3/search/movie?api_key=67cfd6550d69776df1bbefcd79c38b6e&language=en-US&'
+    encoded_title = urllib.parse.quote(title)
+
+    url = pattern.format(query=encoded_title, year=year)
+    url = pattern + "query=" + encoded_title + "&year=" + str(year)
+    r = requests.get(url)
+    res = r.json()
+    try:
+        movie_id = res['results'][0]['poster_path']
+        image_url = 'https://image.tmdb.org/t/p/w500' + str(movie_id)
+        return image_url
+    except:
+        return "No image"
+
+

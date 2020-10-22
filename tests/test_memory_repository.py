@@ -11,7 +11,6 @@ from website.domainmodel.model import Movie, User, Review, Actor, Director, Genr
 from website.datafilereaders import movie_file_csv_reader
 from website.directory import memory_repository
 
-
 x = memory_repository.MemoryRepository()
 data_path = os.path.join('../website', 'datafilereaders', 'datafiles')
 memory_repository.load_movies(data_path, x)
@@ -38,16 +37,17 @@ def test_repository_can_get_review_of_movie():
     rating = 2
     user = User("daneln", "Dane1337")
     review = Review(movie, "not good", 2)
-    a_review = make_review(review_text,user,movie,rating)
+    a_review = make_review(review_text, user, movie, rating)
     x.add_review(a_review)
     a_reviewer = x.get_review_for_movie(movie)
     assert a_reviewer[0] == review
 
 
 def test_repository_movies_have_rating():
-    movie = x.get_movie()
+    a_movie = Movie("Guardians of the Galaxy", 2014)
+    movie = x.get_movie(a_movie)
 
-    assert movie.rating is 7
+    assert movie.rating == 8.1
 
 
 def test_repository_get_10_movies_with_genre():
@@ -101,11 +101,11 @@ def test_repository_can_retrieve_movie():
 
     movie = x.get_movie(a_movie)
 
-    # Check that the Article has the expected title.
+    # Check that the Movie has the expected title.
     assert movie.title == "Guardians of the Galaxy"
     assert movie.release == 2014
 
-    assert movie.genres == "[<Genre Action,Adventure,Sci-Fi>]"
+    assert movie.genres == '[<Genre Action>, <Genre Adventure>, <Genre Sci-Fi>]'
 
 
 def test_repository_does_not_retrieve_a_non_existent_movie():
@@ -114,26 +114,43 @@ def test_repository_does_not_retrieve_a_non_existent_movie():
     assert movie is None
 
 
-def test_repository_movies_have_genres(in_memory_repo):
+def test_repository_movies_have_genres():
     newlist = x.get_10_movies()
 
-    # Check that the query returned 3 Articles.
+    # Check that the query returned 10 Articles.
     assert len(newlist) == 10
     print(newlist[0].genres)
     assert newlist[0].genres is not None
 
 
-def test_repository_can_retrieve_movies_by_date(in_memory_repo):
-    articles = in_memory_repo.get_articles_by_date(date(2020, 3, 1))
+def test_repository_can_retrieve_top_rated_movies():
+    movies = x.get_10_movies()
+    print(movies[0])
+    # Check that the query returned 10 Movies.
+    assert len(movies) == 10
+    assert movies[0].rating == 9.0
 
-    # Check that the query returned 3 Articles.
-    assert len(articles) == 3
+
+def test_repository_can_retrieve_movies_by_title():
+    movies = x.get_movies_by_title("da")
+    print(movies)
 
 
-def test_repository_does_not_retrieve_an_article_when_there_are_no_articles_for_a_given_date(in_memory_repo):
-    articles = in_memory_repo.get_articles_by_date(date(2020, 3, 8))
-    assert len(articles) == 0
+def test_repository_can_retrieve_movies_by_actor():
+    movies = x.get_movies_by_actor("Maika")
+    for movie in movies:
+        print(movie.actors)
+    print(movies)
 
+def test_repository_can_retrieve_movie_url():
+    memory_repository.imdb_from_title("The Dark Knight", 2008)
+
+
+
+def test_repository_can_retrieve_movies_by_director():
+    movies = x.get_movies_by_director("ron howard")
+    print(movies)
+    assert len(movies) == 5
 
 def test_repository_can_retrieve_tags(in_memory_repo):
     tags: List[Tag] = in_memory_repo.get_tags()
@@ -152,9 +169,12 @@ def test_repository_can_retrieve_tags(in_memory_repo):
 
 
 def test_repository_can_get_first_movie():
-    x.sort_movies_by_date()
-    movie = x.get_first_movie()
-    assert movie.title == 'Victor Frankenstein'
+    x.sort_movies_by_release()
+    latest_movie = x.get_first_movie()
+    print(latest_movie.release)
+    oldest_movie = x.get_last_movie()
+    assert oldest_movie.release == 2006
+    assert latest_movie.release == 2016
 
 
 def test_repository_can_get_last_article(in_memory_repo):
@@ -233,28 +253,39 @@ def test_repository_can_add_a_tag(in_memory_repo):
     assert tag in in_memory_repo.get_tags()
 
 
-def test_repository_can_add_a_comment(in_memory_repo):
-    user = in_memory_repo.get_user('thorke')
-    article = in_memory_repo.get_article(2)
-    comment = make_comment("Trump's onto it!", user, article)
+def test_repository_can_add_a_comment():
+    x = memory_repository.MemoryRepository()
+    user = User('dave', '123456789')
+    x.add_user(user)
+    movie = Movie(
+        "Prometheus",
+        2010,
+    )
+    review = make_review("Not good", user, movie, 4, datetime.today())
+    x.add_review(review)
 
-    in_memory_repo.add_comment(comment)
-
-    assert comment in in_memory_repo.get_comments()
+    assert review in x.get_reviews()
 
 
-def test_repository_does_not_add_a_comment_without_a_user(in_memory_repo):
-    article = in_memory_repo.get_article(2)
-    comment = Comment(None, article, "Trump's onto it!", datetime.today())
+def test_repository_does_not_add_a_comment_without_a_user():
+    movie = Movie(
+        "Prometheus",
+        2010,
+    )
+    review = make_review("Not good", None, movie, 4, datetime.today())
 
     with pytest.raises(RepositoryException):
-        in_memory_repo.add_comment(comment)
+        x.add_review(review)
 
 
-def test_repository_does_not_add_a_comment_without_an_article_properly_attached(in_memory_repo):
+def test_repository_does_not_add_a_review_without_an_movie_properly_attached(in_memory_repo):
     user = in_memory_repo.get_user('thorke')
-    article = in_memory_repo.get_article(2)
-    comment = Comment(None, article, "Trump's onto it!", datetime.today())
+
+    movie = Movie(
+        "Prometheus",
+        2010,
+    )
+    comment = add(None, "Trump's onto it!", datetime.today())
 
     user.add_comment(comment)
 
@@ -264,4 +295,17 @@ def test_repository_does_not_add_a_comment_without_an_article_properly_attached(
 
 
 def test_repository_can_retrieve_comments(in_memory_repo):
-    assert len(in_memory_repo.get_comments()) == 2
+    x = memory_repository.MemoryRepository()
+    user = User('dave', '123456789')
+    x.add_user(user)
+    movie = Movie(
+        "Prometheus",
+        2010,
+    )
+    another_movie = Movie("It Follows",2014)
+    review = make_review("Not good", user, movie, 4, datetime.today())
+    in_memory_repo.add_review(review)
+    another_review = make_review("awesome", user, another_movie, 10, datetime.today())
+    in_memory_repo.add_review(another_review)
+    print(in_memory_repo.get_reviews())
+    assert len(in_memory_repo.get_reviews()) == 2

@@ -102,6 +102,7 @@ class Movie:
         self._metascore: int
         self._num_of_ratings: float
         self._reviews = []
+        self._image: str
 
     def __repr__(self):
         return f"<Movie {self._title}, {self.release}>"
@@ -127,10 +128,6 @@ class Movie:
         if type(actor) is Actor and actor not in self._actors:
             self._actors.append(actor)
 
-    def add_rating(self, rating):
-        if type(rating) is float and 1 <= rating <= 10:
-            pass
-
     def remove_actor(self, actor):
         if actor in self._actors:
             self._actors.remove(actor)
@@ -155,6 +152,17 @@ class Movie:
     def metascore(self, value):
         if type(value) is str:
             self._metascore = value
+
+
+    @property
+    def image(self):
+        return self._image
+
+    @image.setter
+    def image(self, value):
+        if type(value) is str:
+            self._image = value
+
 
     @property
     def reviews(self):
@@ -245,7 +253,7 @@ class Review:
             self._review_text = review_text
         else:
             self._review_text = None
-        if type(rating) is int and 1 <= rating <= 10:
+        if type(rating) is int and 0 <= rating <= 10:
             self._rating = rating
         else:
             self._rating = None
@@ -299,7 +307,7 @@ class Review:
 
     @rating.setter
     def rating(self, ratings):
-        if type(ratings) is int and 1 <= ratings <= 10:
+        if type(ratings) is int and 0 <= ratings <= 10:
             self._rating = ratings
         else:
             self._rating = None
@@ -328,7 +336,7 @@ class User:
         self._time_spent_watching_movies_minutes = 0
 
     def __repr__(self):
-        return f"<User {self._user_name} {self._password} >"
+        return f"<User {self._user_name} {self._password}>"
 
     def __eq__(self, other):
         return self._user_name == other._user_name

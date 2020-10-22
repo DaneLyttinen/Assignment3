@@ -4,21 +4,34 @@
   <div id="content-wrapper">
 
     <div id="mini-header">
-      <input type="text" placeholder="Search.." id = "searchBar">
+                {{form.csrf_token}} <!-- Need to include this token - Flask WTForms requires it. -->
+                <br>
+                    {% from "_formhelpers.html" import render_field %}
+            <div class="search-container">
+                    <form method="post" class="search">
+                      <dl>
+                        {{ render_field(form.select) }}
+                        <p>
+                        {{ render_field(form.search) }}
+                      </p></dl>
+                      <p><input id="submit" type="submit" value="Search">
+
+                    </p></form>
+            </div>
+
     </div>
-    <h1>
+    <h1 class="Title-home">
       Top Rated Movies
     </h1>
     <br>
         <div class="container">
           <div class="inner">
         {% for movie in ten_movies %}
-          <div class="movie_box">
-                  <p style="padding-top:10px;margin-left:auto;margin-right:auto;">{{movie.title}}</p>
-                  <p style="padding-top:10px;">Director: {{movie.director.director_full_name}}</p>
-                  <p style="padding-top:10px;">Runtime: {{movie.runtime_minutes}}</p>
-                  <p style="padding-top:10px;">Rating: {{movie.rating}}</p>
-                  <a style="padding-top:10px;" class="more" href="{{ url_for('movie_info_bp.movie_info', movie=movie.title) }}'">View more info</a>
+          <div class="movie_box" style="background-image: url({{movie.image}});">
+
+                        <p class="rating-text" >Rating: {{movie.rating}}</p>
+                        <a style="padding-top:10px;" class="more" href="{{ url_for('movie_info_bp.movie_info', movie=movie.title) }}'">View more info</a>
+
           </div>
          {% endfor %}
             </div>
@@ -32,11 +45,8 @@
         <div class="container">
             <div class="inner">
               {% for m in movie %}
-                <div class="movie_box">
-                  <p style="padding-top:10px;margin-left:auto;margin-right:auto;">{{m.title}}</p>
-                  <p style="padding-top:10px;">Director: {{m.director.director_full_name}}</p>
-                  <p style="padding-top:10px;">Runtime: {{m.runtime_minutes}}</p>
-                  <p style="padding-top:10px;">Rating: {{m.rating}}</p>
+                <div class="movie_box" style="background-image: url({{m.image}});">
+                  <p class="rating-text">Rating: {{m.rating}}</p>
                   <a style="padding-top:10px;" class="more" href="{{ url_for('movie_info_bp.movie_info', movie=m.title) }}'">View more info</a>
                 </div>
               {% endfor %}

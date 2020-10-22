@@ -1,8 +1,12 @@
 import csv
 import os
+import urllib.parse
 from bisect import bisect_left
 from datetime import date, datetime
 from typing import List
+
+import requests
+from flask import request
 from werkzeug.security import generate_password_hash
 
 from website.datafilereaders.movie_file_csv_reader import MovieFileCSVReader
@@ -32,6 +36,33 @@ class MemoryRepository(AbstractRepository):
     def add_movie(self, movie: Movie):
         if type(movie) is Movie and movie not in self._movies:
             self._movies.append(movie)
+
+    def get_movies_by_director(self, director: str):
+        movie_list = []
+        director = director.lower()
+        for movie in self._movies:
+            if director in movie.director.director_full_name.lower():
+                movie_list.append(movie)
+        return movie_list
+
+    def get_movies_by_actor(self, actor: str):
+        movie_list = []
+        actor = actor.lower()
+        for movie in self._movies:
+            for actors in movie.actors:
+                if actor in actors.actor_full_name.lower():
+                    movie_list.append(movie)
+        return movie_list
+
+    def get_movies_by_title(self, title: str):
+        movie_list = []
+        title = title.lower()
+        for movie in self._movies:
+            movie_title = str(movie.title)
+            movie_titles = movie_title.lower()
+            if title in movie_titles:
+                movie_list.append(movie)
+        return movie_list
 
     def get_movie(self, id: Movie) -> Movie:
         movie = None
@@ -68,7 +99,7 @@ class MemoryRepository(AbstractRepository):
     def get_number_of_movies(self):
         return len(self._movies)
 
-    def sort_movies_by_date(self):
+    def sort_movies_by_release(self):
         self._movies.sort(key=lambda x: x.release, reverse=True)
 
     def get_first_movie(self):
@@ -81,7 +112,7 @@ class MemoryRepository(AbstractRepository):
         movie = None
 
         if len(self._movies) > 0:
-            movie = self._movies[-1]
+            movie = self._movies[len(self._movies) - 1]
         return movie
 
     def get_movie_by_title(self, title):
@@ -89,15 +120,13 @@ class MemoryRepository(AbstractRepository):
             if movie.title == title:
                 return movie
 
-
-
-    def get_date_of_previous_movie(self, article: Movie):
+    def get_date_of_previous_movie(self, movie: Movie):
         previous_date = None
 
         try:
-            index = self.movie_index(article)
+            index = self.movie_index(movie)
             for stored_movie in reversed(self._movies[0:index]):
-                if stored_movie.release < article.release:
+                if stored_movie.release < movie.release:
                     previous_date = stored_movie.release
                     break
         except ValueError:
@@ -132,10 +161,8 @@ class MemoryRepository(AbstractRepository):
         super().add_review(comment)
         self._reviews.append(comment)
 
-    def get_comments(self):
+    def get_reviews(self):
         return self._reviews
-
-
 
     # Helper method to return article index.
     def movie_index(self, movie: Movie):
@@ -143,9 +170,6 @@ class MemoryRepository(AbstractRepository):
         if index != len(self._movies) and self._movies[index].date == movie.release:
             return index
         raise ValueError
-
-    def get_10_top_rated(self):
-        a_list = sorted(self._movies, key=lambda x: x.release, reverse=True)
 
     def get_10_movies(self):
         a_list = []
@@ -210,7 +234,6 @@ class MemoryRepository(AbstractRepository):
 
 def load_movies(data_path: str, repo: MemoryRepository):
     tags = dict()
-    data_path = "C:\\Users\Dane\\Desktop\\Assignment2\\website\\datafilereaders\\datafiles"
     movie_file_reader = MovieFileCSVReader(data_path)
     movie_file_reader.read_csv_file()
     for data_row in movie_file_reader.dataset_of_movies:
@@ -218,7 +241,6 @@ def load_movies(data_path: str, repo: MemoryRepository):
 
 
 def load_genres(data_path: str, repo: MemoryRepository):
-    data_path = "C:\\Users\Dane\\Desktop\\Assignment2\\website\\datafilereaders\\datafiles"
     movie_file_reader = MovieFileCSVReader(data_path)
     movie_file_reader.read_csv_file()
     for genre in movie_file_reader.dataset_of_genres:
@@ -226,7 +248,6 @@ def load_genres(data_path: str, repo: MemoryRepository):
 
 
 def load_actors(data_path: str, repo: MemoryRepository):
-    data_path = "C:\\Users\Dane\\Desktop\\Assignment2\\website\\datafilereaders\\datafiles"
     movie_file_reader = MovieFileCSVReader(data_path)
     movie_file_reader.read_csv_file()
     for act in movie_file_reader.dataset_of_actors:
@@ -234,37 +255,10 @@ def load_actors(data_path: str, repo: MemoryRepository):
 
 
 def load_directors(data_path: str, repo: MemoryRepository):
-    data_path = "C:\\Users\Dane\\Desktop\\Assignment2\\website\\datafilereaders\\datafiles"
     movie_file_reader = MovieFileCSVReader(data_path)
     movie_file_reader.read_csv_file()
     for dict in movie_file_reader.dataset_of_directors:
         repo.add_director(dict)
-
-def load_review(repo: MemoryRepository):
-    a_movie = Movie("The Dark Knight", 2008)
-    movie = repo.get_movie(a_movie)
-    review_text = "not good"
-    rating = 2
-    user = User("daneln", "Dane1337")
-    review = Review(movie, "not good", 2)
-    a_review = make_review(review_text,user,movie,rating)
-    repo.add_review(a_review)
-    a_reviewer = repo.get_review_for_movie(movie)
-
-def load_users(data_path: str, repo: MemoryRepository):
-    users = dict()
-
-    for data_row in read_csv_file(os.path.join(data_path, 'users.csv')):
-        user = User(
-            username=data_row[1],
-            password=generate_password_hash(data_row[2])
-        )
-        repo.add_user(user)
-        users[data_row[0]] = user
-    return users
-
-
-
 
 
 def populate(data_path: str, repo: MemoryRepository):
@@ -277,4 +271,16 @@ def populate(data_path: str, repo: MemoryRepository):
 
     load_directors(data_path, repo)
 
-    load_review(repo)
+
+def imdb_from_title(title, year):
+    pattern = 'https://api.themoviedb.org/3/search/movie?api_key=67cfd6550d69776df1bbefcd79c38b6e&language=en-US&'
+    encoded_title = urllib.parse.quote(title)
+
+    url = pattern.format(query=encoded_title, year=year)
+    url = pattern + "query=" + encoded_title + "&year=" + str(year)
+    r = requests.get(url)
+    res = r.json()
+    movie_id = res['results'][0]['poster_path']
+    print(movie_id)
+    image_url = 'https://image.tmdb.org/t/p/w500'+str(movie_id)
+    return image_url

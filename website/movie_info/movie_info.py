@@ -3,7 +3,7 @@ from better_profanity import profanity
 from flask_wtf import FlaskForm
 from werkzeug.utils import redirect
 from wtforms import TextAreaField, HiddenField, SubmitField, IntegerField
-from wtforms.validators import DataRequired, Length, ValidationError, NumberRange
+from wtforms.validators import DataRequired, Length, ValidationError, NumberRange, InputRequired
 import website.directory.repository as repo
 import website.directory.memory_repository as mem
 import website.Home.services as services
@@ -44,24 +44,18 @@ def comment_on_movie():
     username = session['username']
     form = CommentForm()
 
-
+    print(form.review.data)
     if form.validate_on_submit():
         # Successful POST, i.e. the comment text has passed data validation.
-        # Extract the article id, representing the commented article, from the form.
         movie = form.movie_id.data
         a_movie = services.get_movie(repo.repo_instance, movie)
         if a_movie is None:
             movie = movie[0:len(movie) - 1]
             a_movie = services.get_movie(repo.repo_instance, movie)
-
-        print(username)
         # Use the service layer to store the new comment.
+        print(form.review.data)
         services.add_review(a_movie, form.comment.data, form.review.data, username, repo.repo_instance)
 
-        # Retrieve the article in dict form.
-
-        # Cause the web browser to display the page of all articles that have the same date as the commented article,
-        # and display all comments, including the new comment.
         return redirect(url_for('movie_info_bp.movie_info', movie=a_movie.title, view_comments_for=a_movie))
     if request.method == 'GET':
         # Request is a HTTP GET to display the form.
@@ -81,7 +75,6 @@ def comment_on_movie():
         movie=movie,
         form=form,
         handler_url=url_for("movie_info_bp.comment_on_movie"),
-
     )
 
 
@@ -102,9 +95,8 @@ class CommentForm(FlaskForm):
         Length(min=4, message='Your comment is too short'),
         ProfanityFree(message='Your comment must not contain profanity')])
     review = IntegerField('Review', [
-        DataRequired(),
+        InputRequired(),
         NumberRange(min=0, max=10, message='Your input was not a number or out of the range')
-
     ])
     movie_id = HiddenField("Movie id")
     submit = SubmitField('Submit')

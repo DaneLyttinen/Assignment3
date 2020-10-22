@@ -28,24 +28,19 @@ def get_10_movies_genre(repo: AbstractRepository, genre):
     return movies
 
 
-def get_all_movies_genre(repo: AbstractRepository, genre):
-    movies = repo.get_all_movies_genre(genre)
-    return movies
-
-
 def get_movie(repo: AbstractRepository, movie):
     movie = repo.get_movie_by_title(movie)
     return movie
 
 
 def add_review(movie: Movie, comment_text: str, rating: int, username: str, repo: AbstractRepository):
-    # Check that the article exists.
+    # Check that the movie exists.
     movie = repo.get_movie(movie)
     if movie is None:
         raise NonExistentArticleException
 
     user = repo.get_user(username)
-    print("current user",user)
+
     if user is None:
         raise UnknownUserException
 
@@ -54,7 +49,7 @@ def add_review(movie: Movie, comment_text: str, rating: int, username: str, repo
     comment.user = user
     user.add_review(comment)
     movie.add_review(comment)
-    print("all reviews", user.reviews)
+
 
     # Update the repository.
     repo.add_review(comment)

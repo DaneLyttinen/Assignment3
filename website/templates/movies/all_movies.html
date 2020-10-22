@@ -1,15 +1,17 @@
 {% extends 'layout.html' %} {% block content %}
 <body>
 <div id="content-wrapper">
-    <h1>{{genre.genre_name}}</h1>
+
+    {% if all_movies|length == 0 %}
+    <h1>No movies were found!</h1>
+    {% else %}
+    <h1>{{title}}</h1>
+    {% endif %}
     <div class="container">
             <div class="inner">
             {% for m in all_movies %}
-                <div class="movie_box">
-                  <p style="padding-top:10px;">{{m.title}}</p>
-                  <p style="padding-top:10px;">Director: {{m.director.director_full_name}}</p>
-                  <p style="padding-top:10px;">Runtime: {{m.runtime_minutes}}m</p>
-                    <p style="padding-top:10px;">Rating: {{m.rating}}</p>
+                <div class="movie_box" style="background-image: url({{m.image}});">
+                    <p class="rating-text">Rating: {{m.rating}}</p>
                     <a style="padding-top:10px;" class="more" href="{{ url_for('movie_info_bp.movie_info', movie=m.title) }}'">View more info</a>
                 </div>
               {% endfor %}

@@ -21,3 +21,4 @@ password-validator==1.0
 flask-wtf==0.14.2
 WTForms~=2.3.3
 MyApplication~=0.1.0
+requests~=2.24.0

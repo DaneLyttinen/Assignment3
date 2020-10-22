@@ -69,12 +69,26 @@ html {
     height: 130px;
 }
 
+.rating-text {
+    padding-top:120%;
+}
+
+.info-image {
+
+    margin-left:30%;
+
+}
+
+
 .movie_box {
     width:20%;
-    height:180px;
+    height:450px;
     text-align:center;
     float:left;
-    background-color:#333333;
+    margin-bottom:20px;
+    background-size: cover;
+    background-repeat:no-repeat;
+    background-position:center;
 }
 
 .movie_info_box {
@@ -116,8 +130,52 @@ html {
 	text-shadow:0px 1px 0px #000000;
 	text-align:center;
 }
+
+.movie_box > p {
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+.movie_box > a{
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+
+
 #submit:hover {
 	background-color:#808080;
+}
+
+.search-container {
+    float:right;
+    width:50%;
+}
+
+.search >dl >dd {
+    float:left;
+    list-style-type: none;
+    display: inline-block;
+}
+
+dd > select {
+    height:50px;
+    padding: 6px 15px 6px 35px;
+    border-radius: 20px;
+    outline: none;
+}
+
+dd > #search {
+    height:50px;
+    font-size:20px;
+    padding: 1px 15px 6px 35px;
+    border-radius: 20px;
+    outline: none;
+}
+
+.Title-home {
+    width:100%;
+    float:left;
+}
+
+label {
+    color:#D6D6D6;
 }
 
 .btn-general {
@@ -157,6 +215,7 @@ h1 {
 .container {
     overflow:hidden
     width:200px;
+
 }
 
 .inner {
@@ -218,14 +277,6 @@ form > input {
 }
 
 
-#searchBar {
-    width: 20%;
-    padding: 6px 15px 6px 35px;
-    border-radius: 20px;
-    outline: none;
-    float: right;
-    margin-right: 50px;
-}
 
 .menu li{
     list-style-type: none;
@@ -270,4 +321,11 @@ p {
 .comment {
     background-color:#333333;
     padding: 6px 15px 6px 35px;
+}
+
+@media only screen and (max-width: 1670px) {
+    .movie_box {
+        background-size: contain;
+    }
+
 }

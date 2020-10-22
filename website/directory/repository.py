@@ -4,7 +4,6 @@ from datetime import date, datetime
 
 from website.domainmodel.model import User, Review, Movie, Genre
 
-
 repo_instance = None
 
 
@@ -33,6 +32,18 @@ class AbstractRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
+    def get_movies_by_title(self, title) -> str:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_movies_by_director(self, title: str):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_movies_by_actor(self, title: str):
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def get_10_movies_genre(self, genre) -> Genre:
         raise NotImplementedError
 
@@ -57,8 +68,6 @@ class AbstractRepository(abc.ABC):
         """ Adds an Article to the repository. """
         raise NotImplementedError
 
-
-
     @abc.abstractmethod
     def get_movie(self, id: Movie) -> Movie:
         """ Returns Article with id from the repository.
@@ -80,6 +89,6 @@ class AbstractRepository(abc.ABC):
             raise RepositoryException('Comment not correctly attached to an Article')
 
     @abc.abstractmethod
-    def get_comments(self):
+    def get_reviews(self):
         """ Returns the Comments stored in the repository. """
         raise NotImplementedError

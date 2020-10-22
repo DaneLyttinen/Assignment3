@@ -3,6 +3,7 @@
 <div id="content-wrapper">
     <h1>{{movie.title}}</h1>
     <div class="container">
+        <image src="{{movie.image}}" class="info-image"></image>
             <div class="inner">
                 <div class="movie_info_box">
                     <p class="text"> {{movie.description}}</p>
@@ -19,12 +20,12 @@
                       <p  class="text">Runtime: {{movie.runtime_minutes}}m</p>
                     <p  class="text">Release: {{movie.release}} </p>
                     <p  class="text">Rating: {{movie.rating}}({{movie.num_of_ratings}}) Metascore: {{movie.metascore}}</p>
-
-
                 </div>
             </div>
                                 <div style="float:right">
-
+                                    {% if movie.reviews|length > 0 and movie.title != show_comments_for_article %}
+                                <button class="btn-general" onclick="location.href='{{ url_for('movie_info_bp.movie_info', movie=movie.title, view_reviews_for=movie.title)}}'"> reviews</button>
+                            {% endif %}
                             <button class="btn-general" onclick="location.href='{{ url_for('movie_info_bp.comment_on_movie', movie=movie.title) }}'">Comment</button>
                         </div>
                 <div style="clear:both">
