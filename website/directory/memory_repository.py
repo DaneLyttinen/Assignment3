@@ -76,26 +76,6 @@ class MemoryRepository(AbstractRepository):
 
         return movie
 
-    def get_movies_by_date(self, target_movie: Movie.title) -> List[Movie]:
-        target_article = Movie(
-            title=target_movie,
-            release=target_movie.release
-        )
-        matching_articles = list()
-
-        try:
-            index = self.movie_index(target_article)
-            for article in self._movies[index:None]:
-                if article.date == target_movie:
-                    matching_articles.append(article)
-                else:
-                    break
-        except ValueError:
-            # No articles for specified date. Simply return an empty list.
-            pass
-
-        return matching_articles
-
     def get_number_of_movies(self):
         return len(self._movies)
 
@@ -120,36 +100,6 @@ class MemoryRepository(AbstractRepository):
             if movie.title == title:
                 return movie
 
-    def get_date_of_previous_movie(self, movie: Movie):
-        previous_date = None
-
-        try:
-            index = self.movie_index(movie)
-            for stored_movie in reversed(self._movies[0:index]):
-                if stored_movie.release < movie.release:
-                    previous_date = stored_movie.release
-                    break
-        except ValueError:
-            # No earlier articles, so return None.
-            pass
-
-        return previous_date
-
-    def get_date_of_next_movie(self, movie: Movie):
-        next_date = None
-
-        try:
-            index = self.movie_index(movie)
-            for stored_movie in self._movies[index + 1:len(self._movies)]:
-                if stored_movie.release > movie.release:
-                    next_date = stored_movie.release
-                    break
-        except ValueError:
-            # No subsequent articles, so return None.
-            pass
-
-        return next_date
-
     def get_review_for_movie(self, movie: Movie):
         list_of_reviews = []
         for review in self._reviews:
@@ -163,13 +113,6 @@ class MemoryRepository(AbstractRepository):
 
     def get_reviews(self):
         return self._reviews
-
-    # Helper method to return article index.
-    def movie_index(self, movie: Movie):
-        index = bisect_left(self._movies, movie)
-        if index != len(self._movies) and self._movies[index].date == movie.release:
-            return index
-        raise ValueError
 
     def get_10_movies(self):
         a_list = []
@@ -203,6 +146,8 @@ class MemoryRepository(AbstractRepository):
     def add_director(self, director):
         if type(director) is Director and director not in self._directors:
             self._directors.append(director)
+        else:
+            pass
 
     def get_10_movies_genre(self, genre):
         if type(genre) is not Genre:

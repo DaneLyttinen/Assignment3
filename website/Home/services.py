@@ -5,7 +5,7 @@ from website.directory.repository import AbstractRepository
 from website.domainmodel.model import Movie, Review, User
 
 
-class NonExistentArticleException(Exception):
+class NonExistentMovieException(Exception):
     pass
 
 
@@ -29,6 +29,8 @@ def get_10_movies_genre(repo: AbstractRepository, genre):
 
 
 def get_movie(repo: AbstractRepository, movie):
+    if movie is None:
+        raise NonExistentMovieException
     movie = repo.get_movie_by_title(movie)
     return movie
 
@@ -37,7 +39,7 @@ def add_review(movie: Movie, comment_text: str, rating: int, username: str, repo
     # Check that the movie exists.
     movie = repo.get_movie(movie)
     if movie is None:
-        raise NonExistentArticleException
+        raise NonExistentMovieException
 
     user = repo.get_user(username)
 

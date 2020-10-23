@@ -415,7 +415,12 @@ class User:
         else:
             pass
 
+class ReviewException(Exception):
+    pass
+
 def make_review(review_text: str, user: User, movie: Movie, rating, timestamp: datetime = datetime.today()):
+    if user is None or movie is None:
+        raise ReviewException
     review = Review(movie, review_text, rating)
     user.add_review(review)
     movie.add_review(review)
