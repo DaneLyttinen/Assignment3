@@ -63,18 +63,15 @@ def map_model_to_tables():
         '_password': users.c.password,
         '_reviews': relationship(model.Review, backref='_user')
     })
-    mapper(model.Review, reviews, properties={
-        '_comment': reviews.c.comment,
-        '_rating':reviews.c.rating
-    })
+
     movies_mapper = mapper(model.Movie, movies, properties={
         '_id': movies.c.id,
         '_title': movies.c.title,
         '_release': movies.c.release,
         '_description': movies.c.description,
-        '_director':relationship(model.Director, backref="_movie"),
-        '_actors':relationship(model.Actor, backref='_movie'),
-        '_genres':relationship(model.Genre, backref='_movie'),
+        '_director':relationship(model.Director),
+        '_actors':relationship(model.Actor),
+        '_genres':relationship(model.Genre),
         '_runtime': movies.c.runtime,
         '_rating': movies.c.rating,
         '_metascore': movies.c.metascore,
@@ -82,7 +79,17 @@ def map_model_to_tables():
         '_reviews': relationship(model.Review, backref='_movie'),
         '_image_hyperlink': movies.c.image_hyperlink,
     })
-    mapper(model.Actor, actors, properties={
+    mapper(model.Review, reviews, properties={
         '_comment': reviews.c.comment,
-        '_rating':reviews.c.rating
+        '_rating':reviews.c.rating,
+        '_movies': relationship(movies_mappper, secondary="", backref="_reviews" )
+    })
+    mapper(model.Actor, actors, properties={
+        '_full_name': actors.c.name,
+    })
+    mapper(model.Genre, genres, properties={
+        '_name': genres.c.name,
+    })
+    mapper(model.Director, directors, properties={
+        '_name': directors.c.name,
     })
