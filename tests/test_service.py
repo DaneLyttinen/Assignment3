@@ -116,12 +116,6 @@ def test_get_genres(in_memory_repo):
     for genre in genres:
         assert type(genre) is Genre
 
-
-def test_cannot_get_non_existant_movie(in_memory_repo):
-    with pytest.raises(home_services.NonExistentMovieException):
-        home_services.get_movie(in_memory_repo, "Fake Movie")
-
-
 def test_get_10_movies(in_memory_repo):
     movies = home_services.get_ten_movies(in_memory_repo)
     assert len(movies) == 10

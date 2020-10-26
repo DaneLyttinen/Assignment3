@@ -13,7 +13,6 @@ def create_app(test_config=None):
 
     # Create the Flask app object.
     app = Flask(__name__)
-    list_of_top_rated = [1, 2, 3]
     # Configure the app from configuration-file settings.
     app.config.from_object('config.Config')
     data_path = os.path.join('website', 'datafilereaders', 'datafiles')
@@ -26,7 +25,6 @@ def create_app(test_config=None):
     # Create the MemoryRepository implementation for a memory-based repository.
     repo.repo_instance = MemoryRepository()
     populate(data_path, repo.repo_instance)
-    ten_movies = repo.repo_instance.get_10_movies()
 
     # Build the application - these steps require an application context.
     with app.app_context():

@@ -6,11 +6,7 @@ from website.directory import memory_repository
 from website.directory.memory_repository import MemoryRepository
 from website.domainmodel.model import Movie
 
-TEST_DATA_PATH = data_path = os.path.join('../website', 'datafilereaders', 'datafiles')
-
-
-# TEST_DATA_PATH = os.path.join('C:', os.sep, 'Users', 'iwar006', 'Documents', 'Python dev', 'COVID-19', 'tests', 'data')
-
+TEST_DATA_PATH = data_path = os.path.join('website', 'datafilereaders', 'datafiles')
 
 @pytest.fixture
 def in_memory_repo():

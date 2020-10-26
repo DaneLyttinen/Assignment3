@@ -12,12 +12,12 @@ from website.datafilereaders import movie_file_csv_reader
 from website.directory import memory_repository
 
 x = memory_repository.MemoryRepository()
-data_path = os.path.join('../website', 'datafilereaders', 'datafiles')
+data_path = os.path.join('website', 'datafilereaders', 'datafiles')
 memory_repository.load_movies(data_path, x)
 
 
 def test_repository_can_load_movies():
-    data_path = os.path.join('../website', 'datafilereaders', 'datafiles')
+    data_path = os.path.join('website', 'datafilereaders', 'datafiles')
     x = memory_repository.MemoryRepository()
     memory_repository.load_movies(data_path, x)
 
@@ -72,7 +72,7 @@ def test_repository_does_not_retrieve_a_non_existent_user():
 
 def test_repository_can_retrieve_movie_count():
     x = memory_repository.MemoryRepository()
-    data_path = os.path.join('../website', 'datafilereaders', 'datafiles')
+    data_path = os.path.join('website', 'datafilereaders', 'datafiles')
     memory_repository.load_movies(data_path, x)
     number_of_movies = x.get_number_of_movies()
 
@@ -93,7 +93,7 @@ def test_repository_can_add_movie():
 
 def test_repository_can_retrieve_movie():
     x = memory_repository.MemoryRepository()
-    data_path = os.path.join('../website', 'datafilereaders', 'datafiles')
+    data_path = os.path.join('website', 'datafilereaders', 'datafiles')
     memory_repository.load_movies(data_path, x)
     a_movie = Movie("Guardians of the Galaxy", 2014)
     a_genre = Genre("Action,Adventure,Sci-Fi")
@@ -104,7 +104,7 @@ def test_repository_can_retrieve_movie():
     assert movie.title == "Guardians of the Galaxy"
     assert movie.release == 2014
 
-    assert movie.genres == '[<Genre Action>, <Genre Adventure>, <Genre Sci-Fi>]'
+    assert str(movie.genres) == '[<Genre Action>, <Genre Adventure>, <Genre Sci-Fi>]'
 
 
 def test_repository_does_not_retrieve_a_non_existent_movie():
@@ -123,7 +123,6 @@ def test_repository_movies_have_genres():
 
 def test_repository_can_retrieve_top_rated_movies():
     movies = x.get_10_movies()
-    print(movies[0])
     # Check that the query returned 10 Movies.
     assert len(movies) == 10
     assert movies[0].rating == 9.0
@@ -147,14 +146,12 @@ def test_repository_can_retrieve_movie_url():
 
 def test_repository_can_retrieve_movies_by_director():
     movies = x.get_movies_by_director("ron howard")
-    print(movies)
     assert len(movies) == 5
 
 
 def test_repository_can_get_latest_movies():
     x.sort_movies_by_release()
     latest_movie = x.get_first_movie()
-    print(latest_movie.release)
     oldest_movie = x.get_last_movie()
     assert oldest_movie.release == 2006
     assert latest_movie.release == 2016
@@ -218,5 +215,5 @@ def test_repository_can_retrieve_reviews(in_memory_repo):
     in_memory_repo.add_review(review)
     another_review = make_review("awesome", user, another_movie, 10, datetime.today())
     in_memory_repo.add_review(another_review)
-    print(in_memory_repo.get_reviews())
+
     assert len(in_memory_repo.get_reviews()) == 2
