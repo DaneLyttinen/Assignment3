@@ -79,10 +79,56 @@ class SqlAlchemyRepository(AbstractRepository):
             scm.session.add(movie)
             scm.commit()
 
-    def get_movie(self, id: int) -> Movie:
+    def add_genre(self, genre: Genre):
+        with self._session_cm as scm:
+            scm.session.add(genre)
+            scm.commit()
+
+    def add_actors(self, actor: Actor):
+        with self._session_cm as scm:
+            scm.session.add(actor)
+            scm.commit()
+
+    def add_director(self, director: Director):
+        with self._session_cm as scm:
+            scm.session.add(director)
+            scm.commit()
+
+    def get_10_movies_genre(self, genre) -> Genre:
+        a_list = []
+        try:
+            if genre == Genre("Western") or genre == Genre("Musical"):
+                a_list = self._session_cm.session.query(Movie).filter(Movie.genres.like(genre)).limit(5)
+            else:
+                a_list = self._session_cm.session.query(Movie).filter(Movie.genres.like(genre)).limit(10)
+        except NoResultFound:
+            pass
+        return a_list
+
+    def get_all_movies_genre(self, genre):
+        a_list = []
+        try:
+            a_list = self._session_cm.session.query(Movie).filter(Movie.genres.like(genre)).all()
+        except NoResultFound:
+            pass
+        return a_list
+
+    def get_10_movies(self):
+        a_List = []
+
+
+    def get_genres(self):
+        genres = []
+        try:
+            genres = self._session_cm.session.query(Genre).all()
+        except NoResultFound:
+            pass
+        return genres
+
+    def get_movie_by_title(self, id: str) -> Movie:
         movie = None
         try:
-            movie = self._session_cm.session.query(Movie).filter(Movie._id == id).one()
+            movie = self._session_cm.session.query(Movie).filter(Movie.title == id).one()
         except NoResultFound:
             # Ignore any exception and return None.
             pass
@@ -92,6 +138,31 @@ class SqlAlchemyRepository(AbstractRepository):
     def get_number_of_movies(self):
         number_of_movies = self._session_cm.session.query(Movie).count()
         return number_of_movies
+
+    def get_movies_by_director(self, director: str):
+        movie_list =[]
+        try:
+            movie_list = self._session_cm.session.query(Movie).filter(Movie.director == director).all()
+        except NoResultFound:
+            pass
+        return movie_list
+
+    def get_movies_by_actor(self, actor: str):
+        movie_list =[]
+        try:
+            movie_list = self._session_cm.session.query(Movie).filter(Movie.actors == actor).all()
+        except NoResultFound:
+            pass
+        return movie_list
+
+    def get_all_movies_genre(self, genre) -> Genre:
+        movie_list = []
+        try:
+            movie_list = self._session_cm.session.query(Movie).filter(Movie.genres == genre.genre_name).all()
+        except NoResultFound:
+            pass
+        return movie_list
+
 
 
 
