@@ -13,7 +13,7 @@ from sqlalchemy.orm import scoped_session
 from flask import _app_ctx_stack
 
 from website.datafilereaders.movie_file_csv_reader import MovieFileCSVReader
-from website.domainmodel.model import User,Movie,Genre,Review,Actor,Director
+from website.domainmodel.model import User, Movie, Genre, Review, Actor, Director
 from website.directory.repository import AbstractRepository
 
 
@@ -48,6 +48,7 @@ class SessionContextManager:
         if not self.__session is None:
             self.__session.close()
 
+
 class SqlAlchemyRepository(AbstractRepository):
 
     def __init__(self, session_factory):
@@ -67,7 +68,7 @@ class SqlAlchemyRepository(AbstractRepository):
     def get_user(self, username) -> User:
         user = None
         try:
-            user = self._session_cm.session.query(User).filter_by(_username=username).one()
+            user = self._session_cm.session.query(User).filter_by(_user_name=username).one()
         except NoResultFound:
             # Ignore any exception and return None.
             pass
@@ -116,7 +117,6 @@ class SqlAlchemyRepository(AbstractRepository):
     def get_10_movies(self):
         a_List = []
 
-
     def get_genres(self):
         genres = []
         try:
@@ -125,7 +125,7 @@ class SqlAlchemyRepository(AbstractRepository):
             pass
         return genres
 
-    def get_movie_by_title(self, id: str) -> Movie:
+    def get_movies_by_title(self, id: str) -> Movie:
         movie = None
         try:
             movie = self._session_cm.session.query(Movie).filter(Movie.title == id).one()
@@ -140,7 +140,7 @@ class SqlAlchemyRepository(AbstractRepository):
         return number_of_movies
 
     def get_movies_by_director(self, director: str):
-        movie_list =[]
+        movie_list = []
         try:
             movie_list = self._session_cm.session.query(Movie).filter(Movie.director == director).all()
         except NoResultFound:
@@ -148,7 +148,7 @@ class SqlAlchemyRepository(AbstractRepository):
         return movie_list
 
     def get_movies_by_actor(self, actor: str):
-        movie_list =[]
+        movie_list = []
         try:
             movie_list = self._session_cm.session.query(Movie).filter(Movie.actors == actor).all()
         except NoResultFound:
@@ -163,12 +163,24 @@ class SqlAlchemyRepository(AbstractRepository):
             pass
         return movie_list
 
+    def get_reviews(self):
+        reviews_list = []
+        try:
+            reviews_list = self._session_cm.session.query(Review).all()
+        except NoResultFound:
+            pass
+        return reviews_list
 
-
+    def get_review_for_movie(self, movie) -> Movie:
+        reviews_list = []
+        try:
+            reviews_list = self._session_cm.session.query(Movie).filter(Movie.__str__() == movie.__str__()).reviews
+        except NoResultFound:
+            pass
+        return reviews_list
 
 
 def populate(session_factory, data_path, data_filename):
-
     filename = os.path.join(data_path, data_filename)
     movie_file_reader = MovieFileCSVReader(filename)
     movie_file_reader.read_csv_file()
@@ -185,4 +197,3 @@ def populate(session_factory, data_path, data_filename):
         session.add(genre)
 
     session.commit()
-

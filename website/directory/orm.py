@@ -12,7 +12,7 @@ users = Table(
     'users', metadata,
     Column('id', Integer, primary_key=True, autoincrement=True),
     Column('user_name', String(255), unique=True, nullable=False),
-    Column('password', String(255), nullable=False)
+    Column('password', String(255), nullable=False),
 )
 
 reviews = Table(
