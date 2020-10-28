@@ -1,0 +1,4 @@
+id,movie,review-text,rating,author-id
+1,Up,"A classic movie",10,2
+2,Interstellar,"Not as good as Up",0,1
+3,Hacksaw Ridge,"Haven't seen it",5,3

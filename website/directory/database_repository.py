@@ -90,6 +90,28 @@ class SqlAlchemyRepository(AbstractRepository):
             scm.session.add(actor)
             scm.commit()
 
+    def get_movie(self, id: Movie) -> Movie:
+        movie = None
+        try:
+            movie = self._session_cm.session.query(Movie).filter(Movie._title == id.title).one()
+        except NoResultFound:
+            pass
+        return movie
+
+    def get_movie_by_title(self, title) -> str:
+        movie = None
+        try:
+            movie = self._session_cm.session.query(Movie).filter(Movie.title == title).one()
+        except NoResultFound:
+            pass
+        return movie
+
+    def add_review(self, review:Review):
+        super().add_review(review)
+        with self._session_cm as scm:
+            scm.session.add(review)
+            scm.commit()
+
     def add_director(self, director: Director):
         with self._session_cm as scm:
             scm.session.add(director)
@@ -102,14 +124,6 @@ class SqlAlchemyRepository(AbstractRepository):
                 a_list = self._session_cm.session.query(Movie).filter(Movie.genres.like(genre)).limit(5)
             else:
                 a_list = self._session_cm.session.query(Movie).filter(Movie.genres.like(genre)).limit(10)
-        except NoResultFound:
-            pass
-        return a_list
-
-    def get_all_movies_genre(self, genre):
-        a_list = []
-        try:
-            a_list = self._session_cm.session.query(Movie).filter(Movie.genres.like(genre)).all()
         except NoResultFound:
             pass
         return a_list
@@ -141,26 +155,44 @@ class SqlAlchemyRepository(AbstractRepository):
 
     def get_movies_by_director(self, director: str):
         movie_list = []
-        try:
-            movie_list = self._session_cm.session.query(Movie).filter(Movie.director == director).all()
-        except NoResultFound:
-            pass
+        row = self._session_cm.session.execute('SELECT id FROM directors WHERE name = :director_name',{'director_name':director}).fetchone()
+        if row is None:
+            movie_list = list()
+        else:
+            director_id = row[0]
+            print(director_id)
+            movie_list = self._session_cm.session.execute(
+                'SELECT id FROM movies WHERE director = :director_id ORDER BY id ASC',
+                {'director_id':director_id}
+            ).fetchall()
         return movie_list
 
     def get_movies_by_actor(self, actor: str):
         movie_list = []
-        try:
-            movie_list = self._session_cm.session.query(Movie).filter(Movie.actors == actor).all()
-        except NoResultFound:
-            pass
+        row = self._session_cm.session.execute('SELECT id FROM actors WHERE full_name = :actor_name',{'actor_name':actor}).fetchone()
+        if row is None:
+            movie_list = list()
+        else:
+            actor_id = row[0]
+
+            movie_list = self._session_cm.session.execute(
+                'SELECT movie_id FROM movie_actors WHERE actor_id = :actor_id ORDER BY movie_id ASC',
+                {'actor_id':actor_id}
+            ).fetchall()
         return movie_list
 
     def get_all_movies_genre(self, genre) -> Genre:
         movie_list = []
-        try:
-            movie_list = self._session_cm.session.query(Movie).filter(Movie.genres == genre.genre_name).all()
-        except NoResultFound:
-            pass
+        row = self._session_cm.session.execute('SELECT id FROM genres WHERE name = :genre_name',{'genre_name':genre.genre_name}).fetchone()
+        if row is None:
+            movie_list = list()
+        else:
+            genre_id = row[0]
+
+            movie_list = self._session_cm.session.execute(
+                'SELECT movie_id FROM movie_genres WHERE genre_id = :genre_id ORDER BY genre_id ASC',
+                {'genre_id':genre_id}
+            ).fetchall()
         return movie_list
 
     def get_reviews(self):
@@ -179,6 +211,21 @@ class SqlAlchemyRepository(AbstractRepository):
             pass
         return reviews_list
 
+def generic_generator(filename, post_process=None):
+    with open(filename) as infile:
+        reader = csv.reader(infile)
+
+        # Read first line of the CSV file.
+        next(reader)
+
+        # Read remaining rows from the CSV file.
+        for row in reader:
+            # Strip any leading/trailing white space from data read.
+            row = [item.strip() for item in row]
+
+            if post_process is not None:
+                row = post_process(row)
+            yield row
 
 def populate(session_factory, data_path, data_filename):
     filename = os.path.join(data_path, data_filename)
@@ -186,14 +233,15 @@ def populate(session_factory, data_path, data_filename):
     movie_file_reader.read_csv_file()
 
     session = session_factory()
-
-    for movie in movie_file_reader.dataset_of_movies:
-        session.add(movie)
-    for actor in movie_file_reader.dataset_of_actors:
-        session.add(actor)
     for director in movie_file_reader.dataset_of_directors:
         session.add(director)
-    for genre in movie_file_reader.dataset_of_genres:
-        session.add(genre)
+    for movie in movie_file_reader.dataset_of_movies:
+        session.add(movie)
+    filename = os.path.join(data_path, "users.csv")
+    users_file_reader = MovieFileCSVReader(filename)
+    users_file_reader.read_csv_file_users()
+
+    for user in users_file_reader.dataset_of_users:
+        session.add(user)
 
     session.commit()

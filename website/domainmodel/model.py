@@ -102,7 +102,7 @@ class Movie:
         self._metascore: int
         self._num_of_ratings: float
         self._reviews = []
-        self._image: str
+        self._image: str = ""
 
     def __repr__(self):
         return f"<Movie {self._title}, {self.release}>"
@@ -150,7 +150,7 @@ class Movie:
 
     @metascore.setter
     def metascore(self, value):
-        if type(value) is str:
+        if type(value) is int:
             self._metascore = value
 
 

@@ -9,9 +9,10 @@ from website.directory.orm import metadata, map_model_to_tables
 from website.directory.memory_repository import MemoryRepository
 from website.domainmodel.model import Movie
 
-TEST_DATA_PATH_MEMORY = os.path.join('website', 'datafilereaders', 'datafiles')
-TEST_DATA_PATH_DATABASE = os.path.join('website', 'datafilereaders', 'datafiles')
+TEST_DATA_PATH_MEMORY = os.path.join('c:', os.sep, 'Users','Dane Lyttinen','Desktop','assignment3,225','Assignment3','tests', 'data')
+TEST_DATA_PATH_DATABASE = os.path.join('c:', os.sep, 'Users','Dane Lyttinen','Desktop','assignment3,225','Assignment3','tests', 'data')
 filename = "Data1000Movies.csv"
+users = "users.csv"
 
 TEST_DATABASE_URI_IN_MEMORY = 'sqlite://'
 TEST_DATABASE_URI_FILE = 'sqlite:///website-test.db'
@@ -32,7 +33,8 @@ def database_engine():
     for table in reversed(metadata.sorted_tables):  # Remove any data from the tables.
         engine.execute(table.delete())
     map_model_to_tables()
-    database_repository.populate(engine, TEST_DATA_PATH_DATABASE, filename)
+    session_factory = sessionmaker(bind=engine)
+    database_repository.populate(session_factory, TEST_DATA_PATH_DATABASE, filename)
     yield engine
     metadata.drop_all(engine)
     clear_mappers()
@@ -59,7 +61,7 @@ def session():
         engine.execute(table.delete())
     map_model_to_tables()
     session_factory = sessionmaker(bind=engine)
-    database_repository.populate(engine, TEST_DATA_PATH_DATABASE, filename)
+    database_repository.populate(session_factory, TEST_DATA_PATH_DATABASE, filename)
     yield session_factory()
     metadata.drop_all(engine)
     clear_mappers()
@@ -73,7 +75,7 @@ def session_factory():
         engine.execute(table.delete())
     map_model_to_tables()
     session_factory = sessionmaker(bind=engine)
-    database_repository.populate(engine, TEST_DATA_PATH_DATABASE, filename)
+    database_repository.populate(session_factory, TEST_DATA_PATH_DATABASE, filename)
     yield session_factory
     metadata.drop_all(engine)
     clear_mappers()

@@ -19,7 +19,7 @@ reviews = Table(
     'reviews', metadata,
     Column('id', Integer, primary_key=True, autoincrement=True),
     Column('user_id', ForeignKey('users.id')),
-    Column('movie_id', ForeignKey('movie.id')),
+    Column('movie_id', ForeignKey('movies.id')),
     Column('rating',Integer, nullable=False),
     Column('comment', String(1024), nullable=False),
     Column('timestamp', DateTime, nullable=False)
@@ -31,18 +31,32 @@ movies = Table(
     Column('title', String(255), nullable=False),
     Column('release', Integer, nullable=False),
     Column('description', String(1024), nullable=False),
+    Column('director', ForeignKey('directors.id')),
     Column('runtime', Integer, nullable=False),
-    Column('rating', Integer, nullable=False),
-    Column('metascore', Integer, nullable=False),
-    Column('num_of_ratings', Float, nullable=False),
+    Column('rating', Float, nullable=False),
+    Column('metascore', Integer),
+    Column('num_of_ratings', Float),
     Column('image_hyperlink', String(255), nullable=False)
+)
+
+movie_actors = Table(
+    'movie_actors', metadata,
+    Column('id', Integer, primary_key=True, autoincrement=True),
+    Column('movie_id', ForeignKey('movies.id')),
+    Column('actor_id', ForeignKey('actors.id'))
+)
+
+movie_genres = Table(
+    'movie_genres', metadata,
+    Column('id', Integer, primary_key=True, autoincrement=True),
+    Column('movie_id', ForeignKey('movies.id')),
+    Column('genre_id', ForeignKey('genres.id'))
 )
 
 actors = Table(
     'actors', metadata,
     Column('id', Integer, primary_key=True, autoincrement=True),
-    Column('full_name', String(255), nullable=False),
-    Column('colleague_list', String(255), nullable=False)
+    Column('full_name', String(255)),
 )
 
 genres = Table(
@@ -51,15 +65,24 @@ genres = Table(
     Column('name', String(255), nullable=False)
 )
 
+director_movies = Table(
+    'director_movies', metadata,
+    Column('id', Integer, primary_key=True, autoincrement=True),
+    Column('director_id', ForeignKey('directors.id')),
+    Column('movie_id', ForeignKey('movies.id'))
+)
+
 directors = Table(
     'directors', metadata,
     Column('id', Integer, primary_key=True, autoincrement=True),
     Column('name', String(255), nullable=False)
 )
 
+
+
 def map_model_to_tables():
     mapper(model.User, users, properties={
-        '_username': users.c.user_name,
+        '_user_name': users.c.user_name,
         '_password': users.c.password,
         '_reviews': relationship(model.Review, backref='_user')
     })
@@ -67,29 +90,38 @@ def map_model_to_tables():
     movies_mapper = mapper(model.Movie, movies, properties={
         '_id': movies.c.id,
         '_title': movies.c.title,
-        '_release': movies.c.release,
+        'release': movies.c.release,
         '_description': movies.c.description,
-        '_director':relationship(model.Director),
-        '_actors':relationship(model.Actor),
-        '_genres':relationship(model.Genre),
-        '_runtime': movies.c.runtime,
+
+        '_runtime_minutes': movies.c.runtime,
         '_rating': movies.c.rating,
         '_metascore': movies.c.metascore,
-        '_num_of_ratings': movies.c.num_if_ratings,
+        '_num_of_ratings': movies.c.num_of_ratings,
         '_reviews': relationship(model.Review, backref='_movie'),
-        '_image_hyperlink': movies.c.image_hyperlink,
+        '_image': movies.c.image_hyperlink,
+
     })
     mapper(model.Review, reviews, properties={
         '_comment': reviews.c.comment,
         '_rating':reviews.c.rating,
-        '_movies': relationship(movies_mappper, secondary="", backref="_reviews" )
     })
     mapper(model.Actor, actors, properties={
-        '_full_name': actors.c.name,
+        'actor_full_name': actors.c.full_name,
+        '_actor_movie':relationship(
+            movies_mapper,
+            secondary=movie_actors,
+            backref="_actors"
+        )
     })
     mapper(model.Genre, genres, properties={
-        '_name': genres.c.name,
+        'genre_name': genres.c.name,
+        '_genre_movie':relationship(
+            movies_mapper,
+            secondary=movie_genres,
+            backref="_genres"
+        )
     })
     mapper(model.Director, directors, properties={
-        '_name': directors.c.name,
+        '_Director__director_full_name': directors.c.name,
+        '_director_movies':relationship(movies_mapper,secondary=director_movies,backref="_directors")
     })
