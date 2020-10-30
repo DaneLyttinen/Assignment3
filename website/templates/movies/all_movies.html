@@ -9,12 +9,14 @@
     {% endif %}
     <div class="container">
             <div class="inner">
-            {% for m in all_movies %}
+                {% for m in all_movies %}
                 <div class="movie_box" style="background-image: url({{m.image}});">
-                    <p class="rating-text">Rating: {{m.rating}}</p>
-                    <a style="padding-top:10px;" class="more" href="{{ url_for('movie_info_bp.movie_info', movie=m.title) }}'">View more info</a>
+                    <div id="a_hover">
+                        <p class="rating-text" >Rating: {{m.rating}}</p>
+                        <a style="padding-top:10px;" class="more" href="{{ url_for('movie_info_bp.movie_info', movie=m.title) }}'">View more info</a>
+                    </div>
                 </div>
-              {% endfor %}
+                {% endfor %}
             </div>
     </div>
 </div>

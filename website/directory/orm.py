@@ -22,7 +22,7 @@ reviews = Table(
     Column('movie_id', ForeignKey('movies.id')),
     Column('rating',Integer, nullable=False),
     Column('comment', String(1024), nullable=False),
-    Column('timestamp', DateTime, nullable=False)
+    Column('timestamp', DateTime)
 )
 
 movies = Table(
@@ -34,7 +34,7 @@ movies = Table(
     Column('director', ForeignKey('directors.id')),
     Column('runtime', Integer, nullable=False),
     Column('rating', Float, nullable=False),
-    Column('metascore', Integer),
+    Column('metascore', String(255)),
     Column('num_of_ratings', Float),
     Column('image_hyperlink', String(255), nullable=False)
 )
@@ -65,17 +65,12 @@ genres = Table(
     Column('name', String(255), nullable=False)
 )
 
-director_movies = Table(
-    'director_movies', metadata,
-    Column('id', Integer, primary_key=True, autoincrement=True),
-    Column('director_id', ForeignKey('directors.id')),
-    Column('movie_id', ForeignKey('movies.id'))
-)
+
 
 directors = Table(
     'directors', metadata,
     Column('id', Integer, primary_key=True, autoincrement=True),
-    Column('name', String(255), nullable=False)
+    Column('name', String(255), nullable=False),
 )
 
 
@@ -92,7 +87,6 @@ def map_model_to_tables():
         '_title': movies.c.title,
         'release': movies.c.release,
         '_description': movies.c.description,
-
         '_runtime_minutes': movies.c.runtime,
         '_rating': movies.c.rating,
         '_metascore': movies.c.metascore,
@@ -102,7 +96,7 @@ def map_model_to_tables():
 
     })
     mapper(model.Review, reviews, properties={
-        '_comment': reviews.c.comment,
+        '_review_text': reviews.c.comment,
         '_rating':reviews.c.rating,
     })
     mapper(model.Actor, actors, properties={
@@ -123,5 +117,4 @@ def map_model_to_tables():
     })
     mapper(model.Director, directors, properties={
         '_Director__director_full_name': directors.c.name,
-        '_director_movies':relationship(movies_mapper,secondary=director_movies,backref="_directors")
     })

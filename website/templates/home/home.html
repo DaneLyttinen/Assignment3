@@ -28,10 +28,10 @@
           <div class="inner">
         {% for movie in ten_movies %}
           <div class="movie_box" style="background-image: url({{movie.image}});">
-
+                    <div id="a_hover">
                         <p class="rating-text" >Rating: {{movie.rating}}</p>
                         <a style="padding-top:10px;" class="more" href="{{ url_for('movie_info_bp.movie_info', movie=movie.title) }}'">View more info</a>
-
+                    </div>
           </div>
          {% endfor %}
             </div>
@@ -46,8 +46,10 @@
             <div class="inner">
               {% for m in movie %}
                 <div class="movie_box" style="background-image: url({{m.image}});">
-                  <p class="rating-text">Rating: {{m.rating}}</p>
-                  <a style="padding-top:10px;" class="more" href="{{ url_for('movie_info_bp.movie_info', movie=m.title) }}'">View more info</a>
+                    <div id="a_hover">
+                        <p class="rating-text" >Rating: {{m.rating}}</p>
+                        <a style="padding-top:10px;" class="more" href="{{ url_for('movie_info_bp.movie_info', movie=m.title) }}'">View more info</a>
+                    </div>
                 </div>
               {% endfor %}
             </div>

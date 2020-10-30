@@ -94,15 +94,15 @@ class Movie:
             self.release = release
 
         self._description: str
-        self._director: Director = None
+        self._director: Director
         self._actors = []
         self._genres = []
         self._runtime_minutes: int
         self._rating: float
-        self._metascore: int
+        self._metascore: str
         self._num_of_ratings: float
         self._reviews = []
-        self._image: str = ""
+        self._image: str
 
     def __repr__(self):
         return f"<Movie {self._title}, {self.release}>"
@@ -150,7 +150,7 @@ class Movie:
 
     @metascore.setter
     def metascore(self, value):
-        if type(value) is int:
+        if type(value) is str:
             self._metascore = value
 
 
@@ -242,6 +242,7 @@ class Movie:
     def director(self, value):
         if type(value) is Director:
             self._director = value
+
 
 class Review:
     def __init__(self, movie: Movie, review_text: str, rating: int):
@@ -422,8 +423,8 @@ def make_review(review_text: str, user: User, movie: Movie, rating, timestamp: d
     if user is None or movie is None:
         raise ReviewException
     review = Review(movie, review_text, rating)
+    review.user = user
     user.add_review(review)
     movie.add_review(review)
-    review.user = user
 
     return review

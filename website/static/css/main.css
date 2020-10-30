@@ -42,9 +42,10 @@ html {
 }
 
 .more {
-    color:#D6D6D6;
-    bottom:5px;
-
+    color: #D6D6D6;
+    border-style: solid;
+    padding: 5px;
+    background-color: #DC1A28;
 }
 
 
@@ -71,6 +72,8 @@ html {
 
 .rating-text {
     padding-top:120%;
+    padding-bottom:15px;
+    text-shadow:2px 2px 0px #000000;
 }
 
 .info-image {
@@ -90,6 +93,7 @@ html {
     background-position:center;
     position:relative;
 }
+
 
 .movie_info_box {
     margin-top:70px;
@@ -215,11 +219,17 @@ h1 {
 .container {
     overflow:hidden
     width:200px;
-
 }
 
-.inner {
+#a_hover{
+    display:none;
+}
+.container:hover > .inner:hover > .movie_box:hover > #a_hover {
+    display:block;
+    transition: display 1.5s;
 
+}
+.inner {
     overflow:hidden
     width:100%;
 }

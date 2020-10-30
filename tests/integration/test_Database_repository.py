@@ -71,21 +71,21 @@ def test_repository_can_retrieve_movie(session_factory):
     repo = SqlAlchemyRepository(session_factory)
 
     movie = repo.get_movie_by_title("Interstellar")
-
+    print(movie)
     # Check that the Article has the expected title.
     assert movie.title == 'Interstellar'
-
+    a_review = Review(movie,"wow!",10)
+    user = User("ben","dover")
+    repo.add_user(user)
+    make_review("amazing",user,movie,10)
     # Check that the Article is commented as expected.
-    comment_one = [comment for comment in article.comments if comment.comment == 'Oh no, COVID-19 has hit New Zealand'][
+    comment_one = [comment for comment in movie.reviews if comment.review_text == 'wow!'][
         0]
-    comment_two = [comment for comment in article.comments if comment.comment == 'Yeah Freddie, bad news'][0]
 
-    assert comment_one.user.username == 'fmercury'
-    assert comment_two.user.username == "thorke"
 
-    # Check that the Article is tagged as expected.
-    assert article.is_tagged_by(Tag('Health'))
-    assert article.is_tagged_by(Tag('New Zealand'))
+    assert comment_one.user.username == 'ben'
+
+
 
 
 def test_repository_does_not_retrieve_a_non_existent_movie(session_factory):
@@ -100,12 +100,12 @@ def test_repository_can_retrieve_movies_by_actor(session_factory):
 
     movies = repo.get_movies_by_actor("Matt Damon")
 
-    # Check that the query returned 3 Articles.
+    print(movies)
     assert len(movies) == 10
 
     movies = repo.get_movies_by_actor("Brad Pitt")
 
-    # Check that the query returned 5 Articles.
+
     assert len(movies) == 13
 
 
@@ -114,24 +114,106 @@ def test_repository_can_retrieve_movies_by_director(session_factory):
 
     movies = repo.get_movies_by_director("Michael Bay")
 
-    # Check that the query returned 3 Articles.
+
     assert len(movies) == 6
 
     movies = repo.get_movies_by_actor("Brad Pitt")
 
-    # Check that the query returned 5 Articles.
+
     assert len(movies) == 13
+
+def test_repository_can_retrieve_review_for_movie(session_factory):
+    repo = SqlAlchemyRepository(session_factory)
+
+    movie = repo.get_movie_by_title("Interstellar")
+    review = Review(movie,"good",10)
+    user = User("ben","1234")
+    review.user = user
+    repo.add_review(review)
+    movie.add_review(review)
+
+    a_review = repo.get_review_for_movie(movie)
+    print(review)
+    assert len(a_review) == 1
+    assert a_review[0] is review
 
 
 def test_repository_can_retrieve_movies_by_genre(session_factory):
     repo = SqlAlchemyRepository(session_factory)
 
     movies = repo.get_all_movies_genre(Genre("Western"))
+    print(movies)
 
-    # Check that the query returned 3 Articles.
     assert len(movies) == 7
 
     movies = repo.get_all_movies_genre(Genre("Action"))
 
-    # Check that the query returned 5 Articles.
+
     assert len(movies) == 303
+
+def test_repository_can_retrieve_10_movies_by_genre(session_factory):
+    repo = SqlAlchemyRepository(session_factory)
+
+    movies = repo.get_10_movies_genre(Genre("Western"))
+
+    assert len(movies) == 5
+
+    movies = repo.get_10_movies_genre(Genre("Action"))
+
+    assert len(movies) == 10
+
+def test_repository_can_retrieve_10_movies_by_rating(session_factory):
+    repo = SqlAlchemyRepository(session_factory)
+
+    movies = repo.get_10_movies()
+    print(movies)
+    assert len(movies) == 10
+
+def test_repository_can_add_director(session_factory):
+    repo = SqlAlchemyRepository(session_factory)
+
+    director = Director('Dave')
+    repo.add_director(director)
+
+    repo.add_director(Director('Martin'))
+
+    director2 = repo.get_director('Dave')
+
+    assert director2 == director and director2 is director
+
+def test_can_retrieve_an_movie_and_add_a_comment_to_it(session_factory):
+    repo = SqlAlchemyRepository(session_factory)
+
+    # Fetch Article and User.
+    movie = repo.get_movie(Movie("Interstellar", 2014))
+    author = repo.get_user('thorke')
+
+    # Create a new Comment, connecting it to the Article and User.
+    comment = make_review('First death in Australia', author, movie,10)
+
+    movie_fetched = repo.get_movie(Movie("Interstellar", 2014))
+    author_fetched = repo.get_user('thorke')
+
+    assert comment in movie_fetched.reviews
+    assert comment in author_fetched.reviews
+
+def test_repository_can_add_a_comment(session_factory):
+    repo = SqlAlchemyRepository(session_factory)
+
+    user = repo.get_user('thorke')
+    movie = repo.get_movie(Movie("Interstellar", 2014))
+    comment = make_review("mean movie!", user, movie,10)
+
+    repo.add_review(comment)
+
+    assert comment in repo.get_reviews()
+
+def test_repository_does_not_add_a_comment_without_a_user(session_factory):
+    repo = SqlAlchemyRepository(session_factory)
+
+    movie = repo.get_movie(Movie("Interstellar", 2014))
+    comment = Review(movie, "Wonderful movie!",10, )
+
+    with pytest.raises(RepositoryException):
+        repo.add_review(comment)
+

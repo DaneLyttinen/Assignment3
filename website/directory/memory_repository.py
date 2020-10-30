@@ -170,7 +170,6 @@ class MemoryRepository(AbstractRepository):
             return
         a_list = []
         count = 0
-        print(self._movies)
         for movie in self._movies:
             if genre in movie.genres:
                 a_list.append(movie)

@@ -18,6 +18,9 @@ def movies_by_genre():
     a_genre = a_genre[0:len(a_genre) - 1]
     a_genre = Genre(a_genre)
     all_movies = services.get_all_movies_genre(repo.repo_instance, a_genre)
+    print(all_movies)
+    a_movie = all_movies[0]
+    print(a_movie[0].title)
     return render_template(
         'movies/all_movies.html',
         all_movies=all_movies,
@@ -39,5 +42,5 @@ def movies_by_search():
     return render_template(
         'movies/all_movies.html',
         all_movies=movies,
-        title=a_search
+        title=a_search,
     )
