@@ -41,8 +41,9 @@ class MemoryRepository(AbstractRepository):
         movie_list = []
         director = director.lower()
         for movie in self._movies:
-            if director in movie.director.director_full_name.lower():
-                movie_list.append(movie)
+            if movie.director is not None:
+                if director in movie.director.director_full_name.lower():
+                    movie_list.append(movie)
         return movie_list
 
     def get_movies_by_actor(self, actor: str):

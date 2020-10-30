@@ -6,13 +6,13 @@ def test_database_populate_inspect_table_names(database_engine):
 
     # Get table information
     inspector = inspect(database_engine)
-    assert inspector.get_table_names() == ['actors','director_movies', 'directors','genres','movie_actors','movie_genres','movies','reviews','users']
+    assert inspector.get_table_names() == ['actors', 'directors','genres','movie_actors','movie_genres','movies','reviews','users']
 
 def test_database_populate_select_all_genres(database_engine):
 
     # Get table information
     inspector = inspect(database_engine)
-    name_of_genres_table = inspector.get_table_names()[3]
+    name_of_genres_table = inspector.get_table_names()[2]
 
     with database_engine.connect() as connection:
         # query for records in table tags
@@ -50,7 +50,7 @@ def test_database_populate_select_all_directors(database_engine):
 
     # Get table information
     inspector = inspect(database_engine)
-    name_of_directors_table = inspector.get_table_names()[2]
+    name_of_directors_table = inspector.get_table_names()[1]
 
     with database_engine.connect() as connection:
         # query for records in table users
@@ -104,7 +104,7 @@ def test_database_populate_select_all_movies(database_engine):
 
     # Get table information
     inspector = inspect(database_engine)
-    name_of_movies_table = inspector.get_table_names()[6]
+    name_of_movies_table = inspector.get_table_names()[5]
 
     with database_engine.connect() as connection:
         # query for records in table articles

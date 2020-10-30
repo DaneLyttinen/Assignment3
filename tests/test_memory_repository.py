@@ -12,15 +12,11 @@ from website.datafilereaders import movie_file_csv_reader
 from website.directory import memory_repository
 
 x = memory_repository.MemoryRepository()
-data_path = os.path.join('website', 'datafilereaders', 'datafiles')
+data_path = os.path.join('c:', os.sep, 'Users','Dane Lyttinen','Desktop','assignment3,225','Assignment3','tests', 'data', 'Data1000Movies.csv')
 memory_repository.load_movies(data_path, x)
 
-
-def test_repository_can_load_movies():
-    data_path = os.path.join('website', 'datafilereaders', 'datafiles')
-    x = memory_repository.MemoryRepository()
-    memory_repository.load_movies(data_path, x)
-
+def test_repository_can_load_movies(in_memory_repo):
+    memory_repository.load_movies(data_path, in_memory_repo)
 
 def test_repository_can_add_a_user():
     x = memory_repository.MemoryRepository()
@@ -32,14 +28,13 @@ def test_repository_can_add_a_user():
 
 def test_repository_can_get_review_of_movie():
     a_movie = Movie("Guardians of the Galaxy", 2014)
-    movie = x.get_movie(a_movie)
     review_text = "not good"
     rating = 2
     user = User("daneln", "Dane1337")
-    review = Review(movie, "not good", 2)
-    a_review = make_review(review_text, user, movie, rating)
+    review = Review(a_movie, "not good", 2)
+    a_review = make_review(review_text, user, a_movie, rating)
     x.add_review(a_review)
-    a_reviewer = x.get_review_for_movie(movie)
+    a_reviewer = x.get_review_for_movie(a_movie)
     assert a_reviewer[0] == review
 
 
@@ -71,9 +66,6 @@ def test_repository_does_not_retrieve_a_non_existent_user():
 
 
 def test_repository_can_retrieve_movie_count():
-    x = memory_repository.MemoryRepository()
-    data_path = os.path.join('website', 'datafilereaders', 'datafiles')
-    memory_repository.load_movies(data_path, x)
     number_of_movies = x.get_number_of_movies()
 
     # Check that the query returned 1000 movies..
@@ -81,7 +73,6 @@ def test_repository_can_retrieve_movie_count():
 
 
 def test_repository_can_add_movie():
-    x = memory_repository.MemoryRepository()
     movie = Movie(
         "Prometheus",
         2010,
@@ -92,9 +83,6 @@ def test_repository_can_add_movie():
 
 
 def test_repository_can_retrieve_movie():
-    x = memory_repository.MemoryRepository()
-    data_path = os.path.join('website', 'datafilereaders', 'datafiles')
-    memory_repository.load_movies(data_path, x)
     a_movie = Movie("Guardians of the Galaxy", 2014)
     a_genre = Genre("Action,Adventure,Sci-Fi")
 
@@ -114,9 +102,10 @@ def test_repository_does_not_retrieve_a_non_existent_movie():
 
 
 def test_repository_movies_have_genres():
-    newlist = x.get_10_movies()
+    genre = Genre("Action")
+    newlist = x.get_10_movies_genre(genre)
 
-    # Check that the query returned 10 Articles.
+    # Check that the query returned 10 Movies.
     assert len(newlist) == 10
     assert newlist[0].genres is not None
 

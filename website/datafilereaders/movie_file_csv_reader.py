@@ -24,8 +24,8 @@ class MovieFileCSVReader:
                 title = row['Title']
                 release_year = int(row['Year'])
                 movie = Movie(title, release_year)
-                url = imdb_from_title(title, release_year)
-                movie.image = str(url)
+                # url = imdb_from_title(title, release_year)
+                # movie.image = str(url)
                 if movie not in self.__dataset_of_movies:
                     self.__dataset_of_movies.add(movie)
                 actors = row['Actors'].split(",")

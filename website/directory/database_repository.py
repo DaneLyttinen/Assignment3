@@ -178,11 +178,14 @@ class SqlAlchemyRepository(AbstractRepository):
 
     def get_movies_by_director(self, director: str):
         movie_list = []
-        row = self._session_cm.session.execute('SELECT id FROM directors WHERE name LIKE :director_name',{'director_name':"%"+director+"%"}).fetchone()
+        row = self._session_cm.session.execute('SELECT name FROM directors WHERE name LIKE :director_name',{'director_name':"%"+director+"%"}).fetchone()
         if row is None:
             movie_list = list()
         else:
             director_id = row[0]
+            a_list = self._session_cm.session.execute(
+                'SELECT director FROM movies'
+            ).fetchall()
             movie_list = self._session_cm.session.execute(
                 'SELECT id FROM movies WHERE director = :director_id ORDER BY id ASC',
                 {'director_id':director_id}

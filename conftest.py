@@ -9,7 +9,7 @@ from website.directory.orm import metadata, map_model_to_tables
 from website.directory.memory_repository import MemoryRepository
 from website.domainmodel.model import Movie
 
-TEST_DATA_PATH_MEMORY = os.path.join('c:', os.sep, 'Users','Dane Lyttinen','Desktop','assignment3,225','Assignment3','tests', 'data')
+TEST_DATA_PATH_MEMORY = os.path.join('c:', os.sep, 'Users','Dane Lyttinen','Desktop','assignment3,225','Assignment3','tests', 'data', 'Data1000Movies.csv')
 TEST_DATA_PATH_DATABASE = os.path.join('c:', os.sep, 'Users','Dane Lyttinen','Desktop','assignment3,225','Assignment3','tests', 'data')
 filename = "Data1000Movies.csv"
 users = "users.csv"

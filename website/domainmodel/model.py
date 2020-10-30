@@ -94,11 +94,11 @@ class Movie:
             self.release = release
 
         self._description: str
-        self._director: Director
+        self._director: Director = None
         self._actors = []
         self._genres = []
         self._runtime_minutes: int
-        self._rating: float
+        self._rating: float = 0.0
         self._metascore: str
         self._num_of_ratings: float
         self._reviews = []

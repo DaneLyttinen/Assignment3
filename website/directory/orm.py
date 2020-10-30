@@ -36,7 +36,7 @@ movies = Table(
     Column('rating', Float, nullable=False),
     Column('metascore', String(255)),
     Column('num_of_ratings', Float),
-    Column('image_hyperlink', String(255), nullable=False)
+    Column('image_hyperlink', String(255))
 )
 
 movie_actors = Table(
@@ -87,6 +87,7 @@ def map_model_to_tables():
         '_title': movies.c.title,
         'release': movies.c.release,
         '_description': movies.c.description,
+        '_Director__director_full_name':movies.c.director,
         '_runtime_minutes': movies.c.runtime,
         '_rating': movies.c.rating,
         '_metascore': movies.c.metascore,

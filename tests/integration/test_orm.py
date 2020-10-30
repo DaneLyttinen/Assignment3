@@ -94,7 +94,7 @@ def make_movie():
     )
     movie.runtime_minutes = 155
     movie.rating = 7.6
-    movie.metascore = 88
+    movie.metascore = "88"
     movie.num_of_ratings = 145.5
     movie.description = "terrible fake movie"
     movie.image = "fake-link"
@@ -159,7 +159,7 @@ def test_loading_of_movie(empty_session):
     fetched_movie = empty_session.query(Movie).one()
 
     assert expected_movie == fetched_movie
-    assert movie_key == fetched_movie.title
+
 
 
 def test_loading_of_genre_movie(empty_session):
@@ -237,9 +237,9 @@ def test_saving_of_movie(empty_session):
     ))
     print(test)
     rows = list(empty_session.execute(
-            'SELECT title,release,description, director, runtime,rating,metascore,num_of_ratings,image_hyperlink FROM movies'))
+            'SELECT title,release,description, runtime,rating,metascore,num_of_ratings,image_hyperlink FROM movies'))
 
-    assert rows == [("Fake_movie", 2020, "terrible fake movie","", 155, 7.6, 88, 145.5, "fake-link")]
+    assert rows == [("Fake_movie", 2020, "terrible fake movie", 155, 7.6, "88", 145.5, "fake-link")]
 
 
 def test_saving_movie_with_actors_genres(empty_session):
