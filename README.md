@@ -4,11 +4,20 @@
 
 A Web application that demonstrates use of Python's Flask framework. The application makes use of libraries such as the Jinja templating library and WTForms. Architectural design patterns and principles including Repository, Dependency Inversion and Single Responsibility have been used to design the application. The application uses Flask Blueprints to maintain a separation of concerns between application functions. Testing includes unit and end-to-end testing using the pytest tool.
 
-Note
+## Notes
 Unfortunately I couldn't get a movie to link to a director
-correctly and couldn't get this fixed 
+correctly and couldn't get this fixed.
 
-Setting up a virtual environment
+If you want the images to load correctly onto the website please uncomment
+these 2 lines of code inside website/datafilereaders/movie_file_csv_reader.py
+```shell
+# url = imdb_from_title(title, release_year)
+# movie.image = str(url)
+```
+but be aware that this will make the website take around 30 mins to launch
+as it makes fetch requests from a API for every movie of which there are 1000 movies.
+
+## Setting up a virtual environment
 to set up a virtual environment follow these steps
 1. Open a terminal
 2. type in the command
@@ -36,6 +45,8 @@ $ venv\Scripts\activate
 $ pip install -r requirements.txt
 ```
 To set up a virtual environemnt in pycharm follow the steps on the jetbrains website at https://www.jetbrains.com/help/pycharm/creating-virtual-environment.html
+
+This seems to work more accurately than the other ways of setting up the project.
 
 
 ## Execution
